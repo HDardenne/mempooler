@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  & > app-header {
+    flex: 0 0 auto;
+  }
+  & > router-outlet {
+    margin-bottom: 1em;
+  }
+}
+
+:host::ng-deep > router-outlet + * {
+  flex: 1 1 100%;
+  border: 0.25em solid #a9a9a9;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}

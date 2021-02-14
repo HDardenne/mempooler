@@ -1,0 +1,37 @@
+.table-wrapper {
+  margin: 1em -0.5em -0.5em -0.5em;
+  border-top: 0.25em solid #a9a9a9;
+}
+table {
+  border-spacing: 0;
+  width: 100%;
+  thead {
+    background: rgb(51, 51, 51);
+    th {
+      border-bottom: 0.25em solid #a9a9a9;
+    }
+  }
+  tr:nth-child(2n) {
+    background: rgb(51, 51, 51);
+  }
+  td,
+  th {
+    padding: 0.5em;
+  }
+  .height {
+    width: 5em;
+  }
+  .sent {
+    width: 2em;
+  }
+  .action {
+    width: 5em;
+  }
+
+  td.height,
+  td.sent,
+  td.action,
+  td.content {
+    text-align: center;
+  }
+}

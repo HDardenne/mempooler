@@ -1,0 +1,63 @@
+<div *ngIf="!isLogged">
+  Before accessing the app, you need to fill in the form above
+</div>
+
+<div *ngIf="isLogged">
+  <div>
+    Welcome to Mempooler desktop app. Please note that every amount is in HNS,
+    not in dollarydoos
+  </div>
+
+  <div>
+    <h1>Create a bid</h1>
+    <div *ngIf="!hasWallet">
+      You need to select a wallet to create a new bid
+    </div>
+    <div *ngIf="hasWallet">
+      <button type="button" (click)="createBid()">Go to bid creation</button>
+    </div>
+  </div>
+
+  <div>
+    <h1>Lock coins</h1>
+    <div *ngIf="!hasWallet">
+      You need to select a wallet to lock the coins used by your scheduled
+      transactions
+    </div>
+    <div *ngIf="hasWallet">
+      <button type="button" (click)="lockCoins()">Lock coins</button>
+    </div>
+  </div>
+
+  <div>
+    <h1>Scheduled transactions</h1>
+    <div>
+      Below is all your Mempooler transactions
+      <button type="button" (click)="loadTransactions()">Refresh</button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <th class="height">Height</th>
+          <th class="content">Content</th>
+          <th class="sent">Sent</th>
+          <th class="action">Actions</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of filteredTxs">
+            <td class="height">{{ t.heightToSend }}</td>
+            <td class="content">
+              <span *ngFor="let a of t.actions">
+                {{ a.action }} {{ a.name }}
+              </span>
+            </td>
+            <td class="sent">{{ t.isSent ? 'Yes' : 'No' }}</td>
+            <td class="action">
+              <button type="button" (click)="deleteTx(t)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

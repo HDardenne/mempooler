@@ -1,8 +1,9 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const url = require('url');
 const path = require('path');
+import * as Store from 'electron-store';
 
-let mainWindow: BrowserWindow;
+let mainWindow: any;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -15,25 +16,31 @@ function createWindow() {
 
   mainWindow.loadURL(
     url.format({
-      path: path.join(__dirname, `/ dist / index.html`),
-      protocole: 'fichier:',
-      slash: true
+      pathname: path.join(__dirname, `../angular/index.html`),
+      protocol: 'file:',
+      slashes: true
     })
   );
-  // Ouvre les outils de développement.
+  // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  mainWindow.on('fermé', function () {
+  mainWindow.on('closed', function () {
     mainWindow = null;
   });
-}
 
+  initServices();
+}
 app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
-  if (process.platform! == 'darwin') app.quit();
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', function () {
   if (mainWindow === null) createWindow();
 });
+
+function initServices() {
+  const store = new Store();
+  require('./wallet/wallet.electron')(mainWindow, ipcMain, store);
+}

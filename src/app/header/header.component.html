@@ -1,0 +1,68 @@
+<div style="display: flex; flex-flow: row">
+  <div class="item">
+    <div style="flex: 1 1 100%">
+      Mempooler status :
+      <span [ngClass]="{ success: !needLogin, warning: needLogin }">
+        {{ needLogin ? 'Not logged' : 'Logged' }}
+      </span>
+    </div>
+    <p *ngIf="needLogin" style="flex: 1 1 100%">
+      To use Mempooler desktop app, you need to login. Go on Mempooler, generate
+      an authorization link and paste it below
+    </p>
+    <div style="flex: 1 1 100%" *ngIf="loadingMempooler">loading ...</div>
+    <div style="flex: 1 1 100%" *ngIf="!loadingMempooler && !needLogin">
+      <button (click)="logout()">Logout</button>
+    </div>
+    <div
+      style="flex: 1 1 100%; align-self: flex-end"
+      *ngIf="!loadingMempooler && needLogin"
+    >
+      <input placeholder="Authorization link" [(ngModel)]="authorizationUrl" />
+      <button (click)="login()">Login</button>
+      <p *ngIf="loginError">{{ loginError }}</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div style="flex: 1 1 100%">
+      API key status :
+      <span [ngClass]="{ success: !needApiKey, warning: needApiKey }">
+        {{ needApiKey ? 'Not set' : 'Set' }}
+      </span>
+    </div>
+    <p *ngIf="needApiKey" style="flex: 1 1 100%">
+      Mempooler needs to have access to your node to make the API calls in your
+      place. Paste the API key below
+    </p>
+    <div style="flex: 1 1 100%" *ngIf="!needApiKey">
+      <button (click)="clearApiKey()">Clear API Key</button>
+    </div>
+    <div *ngIf="needApiKey" style="flex: 1 1 100%; align-self: flex-end">
+      <input placeholder="API key" [(ngModel)]="apiKey" />
+      <button (click)="setApiKey()">Set API Key</button>
+      <p *ngIf="apiKeyError">{{ apiKeyError }}</p>
+    </div>
+  </div>
+
+  <div class="item">
+    <div style="flex: 1 1 100%">
+      Wallet status :
+      <span [ngClass]="{ success: !needWalletId, warning: needWalletId }">
+        {{ needWalletId ? 'Not selected' : 'Selected' }}
+      </span>
+    </div>
+    <p *ngIf="needWalletId" style="flex: 1 1 100%">
+      You need to select the wallet you want Mempooler to use
+    </p>
+    <div style="flex: 1 1 100%" *ngIf="!needWalletId">
+      <button (click)="clearWalletId()">Clear wallet ID</button>
+    </div>
+    <div *ngIf="needWalletId" style="flex: 1 1 100%; align-self: flex-end">
+      <select [(ngModel)]="walletId">
+        <option *ngFor="let w of wallets" [value]="w">{{ w }}</option>
+      </select>
+      <button (click)="setWalletId()">Set Wallet ID</button>
+    </div>
+  </div>
+</div>

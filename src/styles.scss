@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+.success {
+  background-color: darkolivegreen;
+}
+.warning {
+  background-color: crimson;
+}
+html {
+  background: #222;
+  color: #fff8dc;
+  display: flex;
+  height: 100%;
+  body {
+    display: flex;
+  }
+}
