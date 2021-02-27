@@ -13,3 +13,28 @@
     border: none;
   }
 }
+
+.status-wrapper {
+  flex: 1 1 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  align-content: baseline;
+
+  .status-label {
+    flex: 0 1 auto;
+    padding: 0.25em 0.25em 0.25em 0.5em;
+  }
+  .status {
+    padding: 0.25em 0.5em;
+    border-radius: 1em;
+    flex: 0 0 auto;
+  }
+}
+
+.reset-status {
+  flex: 1 1 100%;
+  margin-top: 0.5em;
+  display: flex;
+  align-items: flex-end;
+}
