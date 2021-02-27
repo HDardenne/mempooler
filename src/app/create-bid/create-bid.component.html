@@ -5,63 +5,94 @@
   <h1>Add a BID</h1>
   <div>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div>
-        <div>
-          <label>Passphrase</label>
-          <input
-            type="password"
-            formControlName="passphrase"
-            placeholder="passphrase"
-          />
-        </div>
-        <div *ngIf="f.height.errors">
-          <div *ngIf="f.height.errors.required">Cannot be empty</div>
-        </div>
-      </div>
-      <div>
-        <div>
-          <label>Height</label>
-          <input type="number" formControlName="height" placeholder="height" />
-        </div>
-        <div *ngIf="f.height.errors">
-          <div *ngIf="f.height.errors.required">Cannot be empty</div>
+      <div class="form-group">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Passphrase</label>
+            <input
+              type="password"
+              formControlName="passphrase"
+              placeholder="passphrase"
+            />
+            <div class="form-field-errors" *ngIf="f.height.errors">
+              <div *ngIf="f.height.errors.required">Cannot be empty</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div>
-        <div>
-          <label>Name</label>
-          <input formControlName="name" placeholder="name" />
+      <div class="form-group">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Name</label>
+            <input formControlName="name" placeholder="name" />
+            <div class="form-field-errors" *ngIf="f.name.errors">
+              <div *ngIf="f.name.errors.required">Cannot be empty</div>
+            </div>
+          </div>
         </div>
-        <div *ngIf="f.name.errors">
-          <div *ngIf="f.name.errors.required">Cannot be empty</div>
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Height</label>
+            <input
+              type="number"
+              formControlName="height"
+              placeholder="height"
+            />
+            <div class="form-field-errors" *ngIf="f.height.errors">
+              <div *ngIf="f.height.errors.required">Cannot be empty</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Max height</label>
+            <input [value]="lastHeight" disabled />
+          </div>
         </div>
       </div>
-      <div>
-        <div>
-          <label>Bid</label>
-          <input type="number" formControlName="bid" placeholder="Bid amount" />
+      <div class="form-group">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Bid</label>
+            <input
+              type="number"
+              formControlName="bid"
+              placeholder="Bid amount"
+            />
+            <div class="form-field-errors" *ngIf="f.bid.errors">
+              <div *ngIf="f.bid.errors.required">Cannot be empty</div>
+            </div>
+          </div>
         </div>
-        <div *ngIf="f.bid.errors">
-          <div *ngIf="f.bid.errors.required">Cannot be empty</div>
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Blind</label>
+            <input
+              type="number"
+              formControlName="blind"
+              placeholder="Blind amount"
+            />
+            <div class="form-field-errors" *ngIf="f.blind.errors">
+              <div *ngIf="f.blind.errors.required">Cannot be empty</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Lockup</label>
+            <input
+              type="number"
+              [value]="(f.bid.value || 0) + (f.blind.value || 0)"
+              disabled
+            />
+          </div>
         </div>
       </div>
-      <div>
-        <div>
-          <label>Blind</label>
-          <input
-            type="number"
-            formControlName="blind"
-            placeholder="Blind amount"
-          />
-        </div>
-        <div *ngIf="f.blind.errors">
-          <div *ngIf="f.blind.errors.required">Cannot be empty</div>
+      <div class="form-group">
+        <div class="form-button-wrapper">
+          <button [disabled]="form.invalid || loading">Create Bid</button>
         </div>
       </div>
-      <div>
-        <span>{{ f.bid.value + f.blind.value }} lockup</span>
-      </div>
-      <button [disabled]="form.invalid || loading">Create</button>
     </form>
   </div>
 </div>

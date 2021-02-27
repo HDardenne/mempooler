@@ -74,6 +74,27 @@ async function decodeTx(hexes: string[]) {
   ret(WalletEventResponse.decodeTx, result);
 }
 
+async function getNamesInfo(names: string[]) {
+  const result = [];
+  for (const hex of names) {
+    const request = await fetch(`http://x:${apiKey}@127.0.0.1:12037`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        method: 'getnameinfo',
+        params: [hex]
+      })
+    });
+
+    const json = await request.json();
+    result.push(json);
+  }
+  ret(WalletEventResponse.getNamesInfo, result);
+}
+
 async function lockCoins(txs: { txid: any; index: any }[]) {
   const result = [];
   for (const t of txs) {
@@ -153,4 +174,5 @@ module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   ipcMain.on(WalletEvent.lockCoins, (e, a) => lockCoins(a));
   ipcMain.on(WalletEvent.unlockCoins, (e, a) => unlockCoins(a));
   ipcMain.on(WalletEvent.verifyApiKey, (e, a) => verifyApiKey(a));
+  ipcMain.on(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
 };

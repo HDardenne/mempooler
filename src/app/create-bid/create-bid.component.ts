@@ -1,7 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { switchMap, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import {
+  debounceTime,
+  distinct,
+  filter,
+  map,
+  switchMap,
+  takeUntil,
+  tap
+} from 'rxjs/operators';
 import { MempoolerService } from '../mempooler/mempooler.service';
 import { WalletService } from '../wallet/wallet.service';
 
@@ -16,11 +25,14 @@ export class CreateBidComponent implements OnInit {
   get f() {
     return this.form!.controls;
   }
+
+  lastHeight = '';
   constructor(
     private mempoolerService: MempoolerService,
     private walletService: WalletService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private ref: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -29,8 +41,29 @@ export class CreateBidComponent implements OnInit {
       name: ['', [Validators.required]],
       height: [null, [Validators.required]],
       bid: [null, [Validators.required]],
-      blind: [null, [Validators.required]]
+      blind: [null, []]
     });
+
+    this.f.name.valueChanges
+      .pipe(
+        distinct(),
+        tap(a => {
+          this.lastHeight = 'Loading';
+        }),
+        debounceTime(500),
+        switchMap(a => {
+          if (!a) {
+            return of([{ result: { info: null } }]);
+          }
+          return this.walletService
+            .getNamesInfo([a])
+            .pipe(takeUntil(this.f.name.valueChanges));
+        })
+      )
+      .subscribe(a => {
+        this.lastHeight = a[0].result.info ? a[0].result.info.height : '';
+        this.ref.detectChanges();
+      });
   }
 
   goToHome() {
@@ -41,9 +74,13 @@ export class CreateBidComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-
     this.loading = true;
+
     const val = this.form.value;
+    if (!val.blind) {
+      val.blind = 0;
+    }
+
     let coins: any[];
     let hex: string;
     this.walletService

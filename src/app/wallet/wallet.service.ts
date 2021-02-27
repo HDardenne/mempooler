@@ -98,9 +98,22 @@ export class WalletService {
 
   decodeTx(hexes: string[]) {
     electron.ipcRenderer.send(WalletEvent.decodeTx, hexes);
-    return new Observable<any>(s => {
+    return new Observable<any[]>(s => {
       electron.ipcRenderer.once(
         WalletEventResponse.decodeTx,
+        (event: any, data: any[]) => {
+          s.next(data);
+          s.complete();
+        }
+      );
+    });
+  }
+
+  getNamesInfo(names: string[]) {
+    electron.ipcRenderer.send(WalletEvent.getNamesInfo, names);
+    return new Observable<any[]>(s => {
+      electron.ipcRenderer.once(
+        WalletEventResponse.getNamesInfo,
         (event: any, data: any[]) => {
           s.next(data);
           s.complete();
