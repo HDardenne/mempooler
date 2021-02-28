@@ -21,8 +21,12 @@ function createWindow() {
       slashes: true
     })
   );
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+
+  const debug = process.env.MEMPOOLER_DEBUG || false;
+  if (debug) {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on('closed', function () {
     mainWindow = null;
@@ -43,4 +47,5 @@ app.on('activate', function () {
 function initServices() {
   const store = new Store();
   require('./wallet/wallet.electron')(mainWindow, ipcMain, store);
+  require('./settings/settings.electron')(mainWindow, ipcMain, store);
 }

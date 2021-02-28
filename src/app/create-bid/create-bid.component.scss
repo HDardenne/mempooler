@@ -27,5 +27,9 @@
 .form-group {
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
+  justify-content: space-evenly;
+}
+
+.form-field-errors {
+  display: none;
 }

@@ -61,7 +61,7 @@ export class CreateBidComponent implements OnInit {
         })
       )
       .subscribe(a => {
-        this.lastHeight = a[0].result.info ? a[0].result.info.height : '';
+        this.lastHeight = a[0].result.info ? a[0].result.info.height + 755 : '';
         this.ref.detectChanges();
       });
   }

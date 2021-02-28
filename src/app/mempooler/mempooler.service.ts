@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {
+  SettingEvent,
+  SettingEventResponse
+} from 'electron/settings/settings.event';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { skip, take, tap } from 'rxjs/operators';
 import { TransactionInfo } from '../model/transaction-info';
 
 const electron = (<any>window).require('electron');
@@ -10,8 +14,13 @@ const electron = (<any>window).require('electron');
   providedIn: 'root'
 })
 export class MempoolerService {
-  // baseUrl = 'https://hda-hns.herokuapp.com/api/mempooler';
-  baseUrl = 'http://localhost:4200/api/mempooler';
+  _baseUrlChange = new BehaviorSubject<string>('');
+  get baseUrlChange() {
+    return this._baseUrlChange as Observable<string>;
+  }
+  get baseUrl() {
+    return this._baseUrlChange.value;
+  }
 
   _isLogged = new BehaviorSubject(false);
   get IsLogged() {
@@ -21,7 +30,26 @@ export class MempoolerService {
     return this._isLogged as Observable<boolean>;
   }
 
-  constructor(private readonly httpService: HttpClient) {}
+  constructor(private readonly httpService: HttpClient) {
+    electron.ipcRenderer.on(
+      SettingEventResponse.setSetting,
+      (event: any, data: { key: string; value: any }) => {
+        if (data.key === 'mempoolerUrl') {
+          this._baseUrlChange.next(data.value);
+        }
+      }
+    );
+  }
+
+  init() {
+    return this.getBaseUrl()
+      .pipe(
+        tap(a => {
+          this._baseUrlChange.next(a);
+        })
+      )
+      .toPromise();
+  }
 
   getHasAccess() {
     return this.httpService.get(`${this.baseUrl}/has-access`).pipe(
@@ -63,5 +91,26 @@ export class MempoolerService {
       heightToSend: height,
       hexData: hex
     });
+  }
+
+  getBaseUrl() {
+    electron.ipcRenderer.send(SettingEvent.getSetting, 'mempoolerUrl');
+    return new Observable<string>(s => {
+      electron.ipcRenderer.once(
+        SettingEventResponse.getSetting,
+        (event: any, data: string) => {
+          s.next(data);
+          s.complete();
+        }
+      );
+    });
+  }
+
+  setBaseUrl(url: string) {
+    electron.ipcRenderer.send(SettingEvent.setSetting, {
+      key: 'mempoolerUrl',
+      value: url
+    });
+    return this._baseUrlChange.pipe(skip(1), take(1));
   }
 }

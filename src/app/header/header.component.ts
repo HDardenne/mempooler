@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { MempoolerService } from '../mempooler/mempooler.service';
 import { WalletService } from '../wallet/wallet.service';
 
@@ -29,7 +29,9 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLogged();
+    if (this.mempoolerService.baseUrl) {
+      this.isLogged();
+    }
     this.walletService.apiKeyChange.subscribe(a => {
       this.apiKey = a;
       this.apiKeyError = '';
@@ -104,11 +106,11 @@ export class HeaderComponent implements OnInit {
       )
       .subscribe(
         a => {
-          this.mempoolerService.setIsLogged(true);
-          this.loadingMempooler = false;
           if (logError) {
             this.loginError = '';
           }
+          this.loadingMempooler = false;
+          this.mempoolerService.setIsLogged(true);
         },
         err => {
           this.loadingMempooler = false;
@@ -129,12 +131,29 @@ export class HeaderComponent implements OnInit {
     this.loadingMempooler = true;
     this.httpService
       .get(this.authorizationUrl, { responseType: 'blob', observe: 'response' })
+      .pipe(
+        switchMap(a => {
+          const key = '/api/mempooler';
+          const baseUrl = this.authorizationUrl.substring(
+            0,
+            this.authorizationUrl.indexOf(key) + key.length
+          );
+          return this.mempoolerService.setBaseUrl(baseUrl);
+        })
+      )
       .subscribe(a => {
-        this.isLogged();
+        return this.isLogged();
       });
   }
 
   logout() {
-    // TODO
+    this.mempoolerService
+      .setBaseUrl('')
+      .pipe(
+        map(() => {
+          this.mempoolerService.setIsLogged(false);
+        })
+      )
+      .subscribe();
   }
 }

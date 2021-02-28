@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -9,6 +9,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './header/header.component';
 import { CreateBidComponent } from './create-bid/create-bid.component';
+import { MempoolerService } from './mempooler/mempooler.service';
+
+export function toto(mempoolerService: MempoolerService) {
+  return () => mempoolerService.init();
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +29,14 @@ import { CreateBidComponent } from './create-bid/create-bid.component';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: toto,
+      deps: [MempoolerService],
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

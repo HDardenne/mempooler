@@ -12,5 +12,39 @@ html {
   height: 100%;
   body {
     display: flex;
+    flex: 1 1 100%;
   }
+}
+
+button {
+  background: #373737;
+  color: cornsilk;
+  border: #797979 solid 0.2em;
+  border-radius: 0.5em;
+  padding: 0.25em 0.5em;
+}
+
+input,
+textarea,
+select {
+  border: none;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  background: #373737;
+  color: cornsilk;
+  font-family: 'Tahoma';
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
 }
