@@ -1,0 +1,16 @@
+appId: 'mempooler.desktop.app'
+productName: 'Mempooler desktop'
+files: ['**/*']
+
+directories:
+  output: '../release'
+  buildResources: 'dist'
+win:
+  target: ['nsis', 'portable']
+mac:
+  target: ['dmg']
+  category: 'public.app-category.utilities'
+dmg:
+linux:
+  target: ['AppImage']
+  category: 'Development'
