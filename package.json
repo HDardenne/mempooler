@@ -4,7 +4,7 @@
   "main": "./dist/electron/main.electron.js",
   "scripts": {
     "ng": "ng",
-    "start": "electron-forge start",
+    "start": "npm run build && electron-forge start",
     "build": "ng build --base-href ./ && tsc --p electron",
     "test": "ng test",
     "lint": "ng lint",
