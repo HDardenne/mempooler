@@ -53,11 +53,33 @@ export class HomeComponent implements OnInit {
   }
 
   deleteTx(tx: TransactionInfo) {
-    this.mempoolerService.deleteTransaction(tx.id).subscribe(res => {
-      this.txs = res.txs;
-      this.filterTxs();
-    });
+    let hex: string;
+    let txs: TransactionInfo[];
+    this.mempoolerService
+      .getTransactionsHex([tx.id])
+      .pipe(
+        switchMap(data => {
+          hex = data[tx.id];
+          return this.mempoolerService.deleteTransaction(tx.id);
+        }),
+        switchMap(res => {
+          txs = res.txs;
+          return this.walletService.decodeTx([hex]);
+        }),
+        switchMap(detail => {
+          const coins = detail[0].inputs.map((a: any) => ({
+            index: a.prevout.index,
+            txid: a.prevout.hash
+          }));
+          return this.walletService.unlockCoins(coins);
+        })
+      )
+      .subscribe(() => {
+        this.txs = txs;
+        this.filterTxs();
+      });
   }
+
   detailTx(tx: TransactionInfo) {}
 
   createBid() {
