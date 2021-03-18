@@ -19,13 +19,13 @@
   </div>
 
   <div>
-    <h1>Lock coins</h1>
+    <h1>Coins</h1>
     <div *ngIf="!hasWallet">
-      You need to select a wallet to lock the coins used by your scheduled
-      transactions
+      You need to select a wallet before accessing the coins
     </div>
     <div *ngIf="hasWallet">
       <button type="button" (click)="lockCoins()">Lock coins</button>
+      <button type="button" (click)="verifyLocks()">Verify coins</button>
     </div>
   </div>
 
@@ -44,7 +44,10 @@
           <th class="action">Actions</th>
         </thead>
         <tbody>
-          <tr *ngFor="let t of filteredTxs">
+          <tr
+            *ngFor="let t of filteredTxs"
+            [ngClass]="{ error: problemTxs.indexOf(t) !== -1 }"
+          >
             <td class="height">{{ t.heightToSend }}</td>
             <td class="content">
               <span *ngFor="let a of t.actions">

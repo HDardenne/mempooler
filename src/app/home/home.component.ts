@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MempoolerService } from '../mempooler/mempooler.service';
 import { TransactionInfo } from '../model/transaction-info';
 import { forkJoin } from 'rxjs';
@@ -15,13 +15,15 @@ export class HomeComponent implements OnInit {
   isLogged = false;
   txs: TransactionInfo[] = [];
   filteredTxs: TransactionInfo[] = [];
+  problemTxs: TransactionInfo[] = [];
   sentFilter = false;
   hasWallet = false;
   constructor(
     private mempoolerService: MempoolerService,
     private walletService: WalletService,
     private router: Router,
-    private zone: NgZone
+    private zone: NgZone,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +46,7 @@ export class HomeComponent implements OnInit {
   loadTransactions() {
     this.mempoolerService.getTransactions().subscribe(res => {
       this.txs = res.txs;
+      this.problemTxs = [];
       this.filterTxs();
     });
   }
@@ -76,7 +79,80 @@ export class HomeComponent implements OnInit {
       )
       .subscribe(() => {
         this.txs = txs;
+        this.problemTxs = [];
         this.filterTxs();
+      });
+  }
+
+  verifyLocks() {
+    const txIds = this.txs.filter(a => !a.isSent).map(a => a.id);
+    const hashAndIndex: {
+      txid: string;
+      index: number;
+      localIndex: number;
+    }[] = [];
+    const problems: {
+      txid: string;
+      index: number;
+      localIndex: number;
+    }[] = [];
+    this.mempoolerService
+      .getTransactionsHex(txIds)
+      .pipe(
+        switchMap(idToInfo =>
+          this.walletService.decodeTx(Object.values(idToInfo))
+        ),
+        switchMap(decodedTxs => {
+          for (let i = 0; i < decodedTxs.length; i++) {
+            const t = decodedTxs[i];
+            for (const inp of t.result.vin) {
+              const item = {
+                localIndex: i,
+                index: inp.vout,
+                txid: inp.txid
+              };
+              const already = hashAndIndex.find(
+                a => a.txid === item.txid && a.index == item.index
+              );
+              if (already) {
+                problems.push(item);
+                if (problems.indexOf(already) === -1) {
+                  problems.push(already);
+                }
+              } else {
+                hashAndIndex.push(item);
+              }
+            }
+          }
+          return this.walletService.getCoins();
+        }),
+        map(coins => {
+          for (const t of hashAndIndex) {
+            if (!coins.find(a => a.hash === t.txid && a.index === t.index)) {
+              problems.push(t);
+            }
+          }
+        })
+      )
+      .subscribe(() => {
+        const problemIds = problems.map(a => txIds[a.localIndex]);
+        this.problemTxs = this.txs.filter(t => problemIds.indexOf(t.id) !== -1);
+        this.cd.detectChanges();
+        if (problems.length === 0) {
+          alert('No problem were found !');
+        } else {
+          alert(
+            'Problems were found :\r\n' +
+              this.problemTxs
+                .map(
+                  a =>
+                    `${a.id} ${a.actions
+                      .map(a => a.action + ' ' + a.name)
+                      .join(',')}`
+                )
+                .join('\r\n ')
+          );
+        }
       });
   }
 

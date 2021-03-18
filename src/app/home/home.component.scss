@@ -14,6 +14,9 @@ table {
   tr:nth-child(2n) {
     background: rgb(51, 51, 51);
   }
+  tr.error {
+    background-color: brown;
+  }
   td,
   th {
     padding: 0.5em;

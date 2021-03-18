@@ -135,6 +135,22 @@ async function unlockCoins(txs: { txid: any; index: any }[]) {
   ret(WalletEventResponse.unlockCoins, result);
 }
 
+async function getCoins() {
+  const request = await fetch(
+    `http://x:${apiKey}@127.0.0.1:12039/wallet/${walletId}/coin`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  const json = await request.json();
+  ret(WalletEventResponse.getCoins, json);
+}
+
 async function verifyApiKey(apiKey: string) {
   const valid = await fetch(`http://x:${apiKey}@127.0.0.1:12039/wallet`, {
     method: 'GET',
@@ -173,6 +189,7 @@ module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   ipcMain.on(WalletEvent.decodeTx, (e, a) => decodeTx(a));
   ipcMain.on(WalletEvent.lockCoins, (e, a) => lockCoins(a));
   ipcMain.on(WalletEvent.unlockCoins, (e, a) => unlockCoins(a));
+  ipcMain.on(WalletEvent.getCoins, () => getCoins());
   ipcMain.on(WalletEvent.verifyApiKey, (e, a) => verifyApiKey(a));
   ipcMain.on(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
 };

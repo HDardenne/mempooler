@@ -5,11 +5,15 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run build && electron-forge start",
-    "build": "ng build --base-href ./ && tsc --p electron",
+    "build": " npm run build:angular && npm run build:electron",
+    "build:angular": "ng build --base-href ./",
+    "build:electron": "tsc --p electron",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dev": "npm run build && npm run start",
+    "dev": "run-p dev:*",
+    "dev:angular": "npm run build:angular -- --watch",
+    "dev:electron": "npm run build:electron -- --watch",
     "package": "electron-forge package",
     "make": "electron-forge make --platform=linux --arch=all",
     "ahah": "electron-builder"
@@ -30,6 +34,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^7.0.2",
     "node-fetch": "^2.6.1",
+    "npm-run-all": "^4.1.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"

@@ -8,7 +8,8 @@ export enum WalletEvent {
   lockCoins = 'lockCoinsRequest',
   unlockCoins = 'unlockCoinsRequest',
   verifyApiKey = 'verifyApiKeyRequest',
-  getNamesInfo = 'getNamesInfoRequest'
+  getNamesInfo = 'getNamesInfoRequest',
+  getCoins = 'getCoinsRequest'
 }
 export enum WalletEventResponse {
   createBid = 'createBidResponse',
@@ -20,5 +21,6 @@ export enum WalletEventResponse {
   lockCoins = 'lockCoinsResponse',
   unlockCoins = 'unlockCoinsResponse',
   verifyApiKey = 'verifyApiKeyResponse',
-  getNamesInfo = 'getNamesInfoResponse'
+  getNamesInfo = 'getNamesInfoResponse',
+  getCoins = 'getCoinsResponse'
 }

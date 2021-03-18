@@ -147,4 +147,17 @@ export class WalletService {
       );
     });
   }
+
+  getCoins() {
+    electron.ipcRenderer.send(WalletEvent.getCoins);
+    return new Observable<any[]>(s => {
+      electron.ipcRenderer.once(
+        WalletEventResponse.getCoins,
+        (event: any, data: any[]) => {
+          s.next(data);
+          s.complete();
+        }
+      );
+    });
+  }
 }
