@@ -89,6 +89,11 @@ export class HomeComponent implements OnInit {
   lockCoins() {
     const toSend = this.txs.filter(a => !a.isSent);
     const txIds = toSend.map(a => a.id);
+    if (txIds.length === 0) {
+      alert('No coin to lock');
+      return;
+    }
+
     this.mempoolerService
       .getTransactionsHex(txIds)
       .pipe(
@@ -106,6 +111,8 @@ export class HomeComponent implements OnInit {
         let error = '';
         if (locks.some(a => !a)) {
           error = 'Something went wrong';
+        } else {
+          alert('Coins locked successfully');
         }
       });
   }
