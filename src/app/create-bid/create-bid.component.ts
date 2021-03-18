@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import {
   debounceTime,
   distinct,
+  distinctUntilChanged,
   filter,
   map,
   switchMap,
@@ -46,7 +47,7 @@ export class CreateBidComponent implements OnInit {
 
     this.f.name.valueChanges
       .pipe(
-        distinct(),
+        distinctUntilChanged(),
         tap(a => {
           this.lastHeight = 'Loading';
         }),
