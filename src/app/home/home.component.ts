@@ -70,9 +70,9 @@ export class HomeComponent implements OnInit {
           return this.walletService.decodeTx([hex]);
         }),
         switchMap(detail => {
-          const coins = detail[0].inputs.map((a: any) => ({
-            index: a.prevout.index,
-            txid: a.prevout.hash
+          const coins = detail[0].result.vin.map((a: any) => ({
+            index: a.index,
+            txid: a.vout
           }));
           return this.walletService.unlockCoins(coins);
         })
@@ -81,6 +81,7 @@ export class HomeComponent implements OnInit {
         this.txs = txs;
         this.problemTxs = [];
         this.filterTxs();
+        this.cd.detectChanges();
       });
   }
 
