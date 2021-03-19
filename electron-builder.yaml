@@ -1,9 +1,9 @@
 appId: 'mempooler.desktop.app'
 productName: 'Mempooler desktop'
-files: ['**/*']
+files: ['dist/**/*']
 
 directories:
-  output: '../release'
+  output: './release'
   buildResources: 'dist'
 win:
   target: ['nsis', 'portable']
