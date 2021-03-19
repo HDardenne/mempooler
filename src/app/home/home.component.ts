@@ -3,7 +3,7 @@ import { MempoolerService } from '../mempooler/mempooler.service';
 import { TransactionInfo } from '../model/transaction-info';
 import { forkJoin } from 'rxjs';
 import { WalletService } from '../wallet/wallet.service';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ModalService } from '../modal/modal.service';
 
@@ -19,6 +19,8 @@ export class HomeComponent implements OnInit {
   problemTxs: TransactionInfo[] = [];
   sentFilter = false;
   hasWallet = false;
+  loading = false;
+
   constructor(
     private mempoolerService: MempoolerService,
     private walletService: WalletService,
@@ -46,10 +48,12 @@ export class HomeComponent implements OnInit {
   }
 
   loadTransactions() {
+    this.loading = true;
     this.mempoolerService.getTransactions().subscribe(res => {
       this.txs = res.txs;
       this.problemTxs = [];
       this.filterTxs();
+      this.loading = false;
     });
   }
 
@@ -60,6 +64,7 @@ export class HomeComponent implements OnInit {
   deleteTx(tx: TransactionInfo) {
     let hex: string;
     let txs: TransactionInfo[];
+    this.loading = true;
     this.mempoolerService
       .getTransactionsHex([tx.id])
       .pipe(
@@ -79,12 +84,19 @@ export class HomeComponent implements OnInit {
           return this.walletService.unlockCoins(coins);
         })
       )
-      .subscribe(() => {
-        this.txs = txs;
-        this.problemTxs = [];
-        this.filterTxs();
-        this.cd.detectChanges();
-      });
+      .subscribe(
+        () => {
+          this.txs = txs;
+          this.problemTxs = [];
+          this.filterTxs();
+          this.loading = false;
+          this.cd.detectChanges();
+        },
+        err => {
+          this.loading = false;
+          this.cd.detectChanges();
+        }
+      );
   }
 
   verifyLocks() {
@@ -98,6 +110,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     const hashAndIndex: {
       txid: string;
       index: number;
@@ -146,33 +159,46 @@ export class HomeComponent implements OnInit {
           }
         })
       )
-      .subscribe(() => {
-        const problemIds = problems.map(a => txIds[a.localIndex]);
-        this.problemTxs = this.txs.filter(t => problemIds.indexOf(t.id) !== -1);
-        if (problems.length === 0) {
-          this.modalService.openModal({
-            type: 'success',
-            title: 'Verify coins OK',
-            detail: 'No problem were found'
-          });
-        } else {
+      .subscribe(
+        () => {
+          this.loading = false;
+          const problemIds = problems.map(a => txIds[a.localIndex]);
+          this.problemTxs = this.txs.filter(
+            t => problemIds.indexOf(t.id) !== -1
+          );
+          if (problems.length === 0) {
+            this.modalService.openModal({
+              type: 'success',
+              title: 'Verify coins OK',
+              detail: 'No problem were found'
+            });
+          } else {
+            this.modalService.openModal({
+              type: 'error',
+              title: 'Verify coins KO',
+              detail:
+                'Problems were found :\r\n' +
+                this.problemTxs
+                  .map(
+                    a =>
+                      `- ${a.id} ${a.actions
+                        .map(a => a.action + ' ' + a.name)
+                        .join(',')}`
+                  )
+                  .join('\r\n ')
+            });
+          }
+          this.cd.detectChanges();
+        },
+        err => {
+          this.loading = false;
           this.modalService.openModal({
             type: 'error',
             title: 'Verify coins KO',
-            detail:
-              'Problems were found :\r\n' +
-              this.problemTxs
-                .map(
-                  a =>
-                    `- ${a.id} ${a.actions
-                      .map(a => a.action + ' ' + a.name)
-                      .join(',')}`
-                )
-                .join('\r\n ')
+            detail: 'something went wrong'
           });
         }
-        this.cd.detectChanges();
-      });
+      );
   }
 
   detailTx(tx: TransactionInfo) {}
@@ -193,6 +219,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.mempoolerService
       .getTransactionsHex(txIds)
       .pipe(
@@ -204,22 +231,30 @@ export class HomeComponent implements OnInit {
             )
             .reduce((prev, cur) => prev.concat(cur), []) as any[];
           return forkJoin(this.walletService.lockCoins(hexes));
+        }),
+        tap(locks => {
+          if (locks.some(a => !a)) {
+            throw new Error('Something went wrong');
+          }
         })
       )
-      .subscribe(locks => {
-        if (locks.some(a => !a)) {
-          this.modalService.openModal({
-            type: 'error',
-            title: 'Lock coins KO',
-            detail: 'Something went wrong'
-          });
-        } else {
+      .subscribe(
+        locks => {
+          this.loading = false;
           this.modalService.openModal({
             type: 'success',
             title: 'Lock coins OK',
             detail: 'Coins locked successfully'
           });
+        },
+        err => {
+          this.loading = false;
+          this.modalService.openModal({
+            type: 'error',
+            title: 'Lock coins KO',
+            detail: 'Something went wrong'
+          });
         }
-      });
+      );
   }
 }
