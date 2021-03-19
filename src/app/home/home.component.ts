@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { WalletService } from '../wallet/wallet.service';
 import { map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { ModalService } from '../modal/modal.service';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,8 @@ export class HomeComponent implements OnInit {
     private walletService: WalletService,
     private router: Router,
     private zone: NgZone,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -87,6 +89,15 @@ export class HomeComponent implements OnInit {
 
   verifyLocks() {
     const txIds = this.txs.filter(a => !a.isSent).map(a => a.id);
+    if (txIds.length === 0) {
+      this.modalService.openModal({
+        type: 'error',
+        title: 'Verify coins KO',
+        detail: 'No transaction to verify'
+      });
+      return;
+    }
+
     const hashAndIndex: {
       txid: string;
       index: number;
@@ -138,22 +149,29 @@ export class HomeComponent implements OnInit {
       .subscribe(() => {
         const problemIds = problems.map(a => txIds[a.localIndex]);
         this.problemTxs = this.txs.filter(t => problemIds.indexOf(t.id) !== -1);
-        this.cd.detectChanges();
         if (problems.length === 0) {
-          alert('No problem were found !');
+          this.modalService.openModal({
+            type: 'success',
+            title: 'Verify coins OK',
+            detail: 'No problem were found'
+          });
         } else {
-          alert(
-            'Problems were found :\r\n' +
+          this.modalService.openModal({
+            type: 'error',
+            title: 'Verify coins KO',
+            detail:
+              'Problems were found :\r\n' +
               this.problemTxs
                 .map(
                   a =>
-                    `${a.id} ${a.actions
+                    `- ${a.id} ${a.actions
                       .map(a => a.action + ' ' + a.name)
                       .join(',')}`
                 )
                 .join('\r\n ')
-          );
+          });
         }
+        this.cd.detectChanges();
       });
   }
 
@@ -167,7 +185,11 @@ export class HomeComponent implements OnInit {
     const toSend = this.txs.filter(a => !a.isSent);
     const txIds = toSend.map(a => a.id);
     if (txIds.length === 0) {
-      alert('No coin to lock');
+      this.modalService.openModal({
+        type: 'error',
+        title: 'Lock coins KO',
+        detail: 'No coin to lock'
+      });
       return;
     }
 
@@ -185,11 +207,18 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe(locks => {
-        let error = '';
         if (locks.some(a => !a)) {
-          error = 'Something went wrong';
+          this.modalService.openModal({
+            type: 'error',
+            title: 'Lock coins KO',
+            detail: 'Something went wrong'
+          });
         } else {
-          alert('Coins locked successfully');
+          this.modalService.openModal({
+            type: 'success',
+            title: 'Lock coins OK',
+            detail: 'Coins locked successfully'
+          });
         }
       });
   }

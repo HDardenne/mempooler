@@ -13,6 +13,7 @@ import {
   tap
 } from 'rxjs/operators';
 import { MempoolerService } from '../mempooler/mempooler.service';
+import { ModalService } from '../modal/modal.service';
 import { WalletService } from '../wallet/wallet.service';
 
 @Component({
@@ -33,7 +34,8 @@ export class CreateBidComponent implements OnInit {
     private walletService: WalletService,
     private router: Router,
     private fb: FormBuilder,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -111,10 +113,13 @@ export class CreateBidComponent implements OnInit {
       )
       .subscribe(
         res => {
-          alert(
-            'All good ! The transaction will be broadcasted at height ' +
+          this.modalService.openModal({
+            type: 'success',
+            title: 'Create BID OK',
+            detail:
+              'All good ! The transaction will be broadcasted at height ' +
               val.height
-          );
+          });
           this.form.controls.bid.reset(null);
           this.form.controls.blind.reset(null);
           this.form.controls.name.reset('');
@@ -124,7 +129,11 @@ export class CreateBidComponent implements OnInit {
           if (coins) {
             this.walletService.unlockCoins(coins);
           }
-          alert(err.message);
+          this.modalService.openModal({
+            type: 'error',
+            title: 'Create BID KO',
+            detail: err.message
+          });
           this.loading = false;
         }
       );

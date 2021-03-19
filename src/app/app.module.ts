@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './header/header.component';
 import { CreateBidComponent } from './create-bid/create-bid.component';
 import { MempoolerService } from './mempooler/mempooler.service';
+import { ModalComponent } from './modal/modal.component';
 
 export function toto(mempoolerService: MempoolerService) {
   return () => mempoolerService.init();
@@ -20,7 +21,8 @@ export function toto(mempoolerService: MempoolerService) {
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    CreateBidComponent
+    CreateBidComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,

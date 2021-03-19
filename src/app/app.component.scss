@@ -2,17 +2,25 @@
   display: flex;
   flex-flow: column;
   flex: 1 1 100%;
-  & > app-header {
+  & .app-wrapper app-header {
     flex: 0 0 auto;
   }
-  & > router-outlet {
+  & .app-wrapper router-outlet {
     margin-bottom: 1em;
   }
 }
 
-:host::ng-deep > router-outlet + * {
+:host::ng-deep .app-wrapper router-outlet + * {
   flex: 1 1 100%;
   border: 0.25em solid #a9a9a9;
   border-radius: 0.5em;
   padding: 0.5em;
+}
+
+.app-wrapper {
+  display: flex;
+  /* flex: 1 1 100%; */
+  flex-flow: column;
+  overflow: auto;
+  padding: 8px;
 }

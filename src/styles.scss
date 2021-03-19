@@ -2,9 +2,17 @@
 .success {
   background-color: darkolivegreen;
 }
+.text-successful {
+  color: #3bdc3b;
+}
+
 .warning {
   background-color: crimson;
 }
+.text-error {
+  color: #e61f28;
+}
+
 html {
   background: #222;
   color: #fff8dc;
@@ -13,6 +21,7 @@ html {
   body {
     display: flex;
     flex: 1 1 100%;
+    margin: 0;
   }
 }
 
@@ -47,4 +56,8 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type='number'] {
   -moz-appearance: textfield;
+}
+
+.hidden {
+  display: none;
 }
