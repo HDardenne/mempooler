@@ -34,4 +34,8 @@
   > * + * {
     margin-top: 0.5em;
   }
+  .detail {
+    overflow: auto;
+    white-space: pre-line;
+  }
 }
