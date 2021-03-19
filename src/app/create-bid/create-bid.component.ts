@@ -124,6 +124,7 @@ export class CreateBidComponent implements OnInit {
           this.form.controls.blind.reset(null);
           this.form.controls.name.reset('');
           this.loading = false;
+          this.ref.detectChanges();
         },
         err => {
           if (coins) {
@@ -135,6 +136,7 @@ export class CreateBidComponent implements OnInit {
             detail: err.message
           });
           this.loading = false;
+          this.ref.detectChanges();
         }
       );
   }

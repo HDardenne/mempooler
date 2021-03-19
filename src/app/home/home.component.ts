@@ -170,14 +170,14 @@ export class HomeComponent implements OnInit {
             this.modalService.openModal({
               type: 'success',
               title: 'Verify coins OK',
-              detail: 'No problem were found'
+              detail: 'No problem found'
             });
           } else {
             this.modalService.openModal({
               type: 'error',
               title: 'Verify coins KO',
               detail:
-                'Problems were found :\r\n' +
+                'Problems found :\r\n' +
                 this.problemTxs
                   .map(
                     a =>
@@ -246,6 +246,7 @@ export class HomeComponent implements OnInit {
             title: 'Lock coins OK',
             detail: 'Coins locked successfully'
           });
+          this.cd.detectChanges();
         },
         err => {
           this.loading = false;
@@ -254,6 +255,7 @@ export class HomeComponent implements OnInit {
             title: 'Lock coins KO',
             detail: 'Something went wrong'
           });
+          this.cd.detectChanges();
         }
       );
   }
