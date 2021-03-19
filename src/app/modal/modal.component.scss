@@ -1,12 +1,9 @@
-:host {
-  position: fixed;
+.modal-wrapper {
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  pointer-events: none;
-}
-.modal-wrapper {
   display: flex;
   background: #000000e0;
   flex-flow: column;
@@ -14,7 +11,7 @@
   align-items: center;
   justify-content: center;
   overflow: auto;
-  pointer-events: all;
+  z-index: 2;
 }
 
 .modal-container {
