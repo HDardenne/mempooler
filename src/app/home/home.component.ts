@@ -78,8 +78,8 @@ export class HomeComponent implements OnInit {
         }),
         switchMap(detail => {
           const coins = detail[0].result.vin.map((a: any) => ({
-            index: a.index,
-            txid: a.vout
+            index: a.vout,
+            txid: a.txid
           }));
           return this.walletService.unlockCoins(coins);
         })
