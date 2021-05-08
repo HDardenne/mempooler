@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { WalletEvent, WalletEventResponse } from 'electron/wallet/wallet.event';
+import { EventType } from 'electron/eventType';
+import { WalletEvent } from 'electron/wallet/wallet.event';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 import { skip, take } from 'rxjs/operators';
+import { Utils } from '../utils';
 
 const electron = (<any>window).require('electron');
 
@@ -28,136 +30,82 @@ export class WalletService {
 
   constructor() {
     electron.ipcRenderer.on(
-      WalletEventResponse.setApiKey,
+      WalletEvent.setApiKey + EventType.Response,
       (event: any, newWalletId: string) => {
         this._apiKeyChange.next(newWalletId);
       }
     );
 
     electron.ipcRenderer.on(
-      WalletEventResponse.setWalletId,
+      WalletEvent.setWalletId + EventType.Response,
       (event: any, newWalletId: string) => {
         this._walletIdChange.next(newWalletId);
       }
     );
   }
 
+  request<T>(event: WalletEvent, reqArg: any): Observable<T> {
+    return Utils.request(electron, event, reqArg);
+  }
+
   createBid(passphrase: string, name: string, bid: number, blind: number) {
-    electron.ipcRenderer.send(WalletEvent.createBid, {
+    const obs = this.request<any>(WalletEvent.createBid, {
       passphrase,
       name,
       bid,
       blind
     });
-    return new Observable<any>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.createBid,
-        (event: any, data: any) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    return obs;
   }
 
   setApiKey(apiKey: string) {
-    electron.ipcRenderer.send(WalletEvent.setApiKey, apiKey);
+    electron.ipcRenderer.send(
+      WalletEvent.setApiKey + EventType.Request,
+      apiKey
+    );
     return this._apiKeyChange.pipe(skip(1), take(1));
   }
 
   verifyApiKey(apiKey: string) {
-    electron.ipcRenderer.send(WalletEvent.verifyApiKey, apiKey);
-    return new Observable<boolean>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.verifyApiKey,
-        (event: any, data: boolean) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<boolean>(WalletEvent.verifyApiKey, apiKey);
+    return obs;
   }
 
   setWalletId(walletId: string) {
-    electron.ipcRenderer.send(WalletEvent.setWalletId, walletId);
+    electron.ipcRenderer.send(
+      WalletEvent.setWalletId + EventType.Request,
+      walletId
+    );
     return this._walletIdChange.pipe(skip(1), take(1));
   }
 
   getWallets() {
-    electron.ipcRenderer.send(WalletEvent.getWallets);
-    return new Observable<string[]>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.getWallets,
-        (event: any, data: string[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<string[]>(WalletEvent.getWallets, undefined);
+    return obs;
   }
 
   decodeTx(hexes: string[]) {
-    electron.ipcRenderer.send(WalletEvent.decodeTx, hexes);
-    return new Observable<any[]>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.decodeTx,
-        (event: any, data: any[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<any[]>(WalletEvent.decodeTx, hexes);
+    return obs;
   }
 
   getNamesInfo(names: string[]) {
-    electron.ipcRenderer.send(WalletEvent.getNamesInfo, names);
-    return new Observable<any[]>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.getNamesInfo,
-        (event: any, data: any[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<any[]>(WalletEvent.getNamesInfo, names);
+    return obs;
   }
 
-  lockCoins(txs: { txid: any; index: any }[]): any {
-    electron.ipcRenderer.send(WalletEvent.lockCoins, txs);
-    return new Observable<any>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.lockCoins,
-        (event: any, data: boolean[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+  lockCoins(txs: { txid: any; index: any }[]) {
+    const obs = this.request<boolean[]>(WalletEvent.lockCoins, txs);
+    return obs;
   }
 
-  unlockCoins(txs: { txid: any; index: any }[]): any {
-    electron.ipcRenderer.send(WalletEvent.unlockCoins, txs);
-    return new Observable<any>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.unlockCoins,
-        (event: any, data: boolean[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+  unlockCoins(txs: { txid: any; index: any }[]) {
+    const obs = this.request<boolean[]>(WalletEvent.unlockCoins, txs);
+    return obs;
   }
 
   getCoins() {
-    electron.ipcRenderer.send(WalletEvent.getCoins);
-    return new Observable<any[]>(s => {
-      electron.ipcRenderer.once(
-        WalletEventResponse.getCoins,
-        (event: any, data: any[]) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<any[]>(WalletEvent.getCoins, undefined);
+    return obs;
   }
 }

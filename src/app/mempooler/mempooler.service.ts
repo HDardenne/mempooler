@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  SettingEvent,
-  SettingEventResponse
-} from 'electron/settings/settings.event';
+import { EventType } from 'electron/eventType';
+import { SettingEvent } from 'electron/settings/settings.event';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { skip, take, tap } from 'rxjs/operators';
 import { TransactionInfo } from '../model/transaction-info';
+import { Utils } from '../utils';
 
 const electron = (<any>window).require('electron');
 
@@ -32,7 +31,7 @@ export class MempoolerService {
 
   constructor(private readonly httpService: HttpClient) {
     electron.ipcRenderer.on(
-      SettingEventResponse.setSetting,
+      SettingEvent.setSetting,
       (event: any, data: { key: string; value: any }) => {
         if (data.key === 'mempoolerUrl') {
           this._baseUrlChange.next(data.value);
@@ -49,6 +48,10 @@ export class MempoolerService {
         })
       )
       .toPromise();
+  }
+
+  request<T>(event: SettingEvent, reqArg: any): Observable<T> {
+    return Utils.request<T>(electron, event, reqArg);
   }
 
   getHasAccess() {
@@ -94,20 +97,12 @@ export class MempoolerService {
   }
 
   getBaseUrl() {
-    electron.ipcRenderer.send(SettingEvent.getSetting, 'mempoolerUrl');
-    return new Observable<string>(s => {
-      electron.ipcRenderer.once(
-        SettingEventResponse.getSetting,
-        (event: any, data: string) => {
-          s.next(data);
-          s.complete();
-        }
-      );
-    });
+    const obs = this.request<string>(SettingEvent.getSetting, 'mempoolerUrl');
+    return obs;
   }
 
   setBaseUrl(url: string) {
-    electron.ipcRenderer.send(SettingEvent.setSetting, {
+    electron.ipcRenderer.send(SettingEvent.setSetting + EventType.Request, {
       key: 'mempoolerUrl',
       value: url
     });

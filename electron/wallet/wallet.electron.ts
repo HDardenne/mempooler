@@ -1,15 +1,19 @@
 import fetch from 'node-fetch';
 import { IpcMain, session } from 'electron';
 import * as Store from 'electron-store';
-import { WalletEvent, WalletEventResponse } from '../wallet/wallet.event';
+import { WalletEvent } from '../wallet/wallet.event';
+import { Utils } from '../utils';
 
 let window: any;
 let ipcMain: IpcMain;
 let apiKey = '';
 let walletId = '';
 
-function ret(eventName: WalletEventResponse, data: any) {
-  window.webContents.send(eventName, data);
+function register(
+  eventName: WalletEvent,
+  func: (e: any, a: any) => Promise<any>
+) {
+  Utils.register(window, ipcMain, eventName, func);
 }
 
 async function getWallets() {
@@ -26,7 +30,7 @@ async function getWallets() {
   });
 
   const json = await bidRequest.json();
-  ret(WalletEventResponse.getWallets, json);
+  return json;
 }
 
 async function createBid(d: any) {
@@ -50,7 +54,7 @@ async function createBid(d: any) {
   );
 
   const json = await bidRequest.json();
-  ret(WalletEventResponse.createBid, json);
+  return json;
 }
 
 async function decodeTx(hexes: string[]) {
@@ -71,7 +75,7 @@ async function decodeTx(hexes: string[]) {
     const json = await request.json();
     result.push(json);
   }
-  ret(WalletEventResponse.decodeTx, result);
+  return result;
 }
 
 async function getNamesInfo(names: string[]) {
@@ -92,7 +96,7 @@ async function getNamesInfo(names: string[]) {
     const json = await request.json();
     result.push(json);
   }
-  ret(WalletEventResponse.getNamesInfo, result);
+  return result;
 }
 
 async function lockCoins(txs: { txid: any; index: any }[]) {
@@ -112,7 +116,7 @@ async function lockCoins(txs: { txid: any; index: any }[]) {
     const json = await request.json();
     result.push(json);
   }
-  ret(WalletEventResponse.lockCoins, result);
+  return result;
 }
 
 async function unlockCoins(txs: { txid: any; index: any }[]) {
@@ -132,7 +136,7 @@ async function unlockCoins(txs: { txid: any; index: any }[]) {
     const json = await request.json();
     result.push(json);
   }
-  ret(WalletEventResponse.unlockCoins, result);
+  return result;
 }
 
 async function getCoins() {
@@ -148,7 +152,7 @@ async function getCoins() {
   );
 
   const json = await request.json();
-  ret(WalletEventResponse.getCoins, json);
+  return json;
 }
 
 async function verifyApiKey(apiKey: string) {
@@ -164,32 +168,22 @@ async function verifyApiKey(apiKey: string) {
     })
     .catch(a => false);
 
-  ret(WalletEventResponse.verifyApiKey, valid);
+  return valid;
 }
 
 module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   window = w;
   ipcMain = ipcm;
 
-  ipcMain.on(WalletEvent.setApiKey, async (event: any, newApiKey: any) => {
-    apiKey = newApiKey;
-    ret(WalletEventResponse.setApiKey, newApiKey);
-  });
-
-  ipcMain.on(WalletEvent.getApiKey, (event: any) => {
-    ret(WalletEventResponse.getApiKey, apiKey);
-  });
-
-  ipcMain.on(WalletEvent.setWalletId, (event: any, newWalletId: any) => {
-    walletId = newWalletId;
-    ret(WalletEventResponse.setWalletId, newWalletId);
-  });
-  ipcMain.on(WalletEvent.getWallets, () => getWallets());
-  ipcMain.on(WalletEvent.createBid, (e, a) => createBid(a));
-  ipcMain.on(WalletEvent.decodeTx, (e, a) => decodeTx(a));
-  ipcMain.on(WalletEvent.lockCoins, (e, a) => lockCoins(a));
-  ipcMain.on(WalletEvent.unlockCoins, (e, a) => unlockCoins(a));
-  ipcMain.on(WalletEvent.getCoins, () => getCoins());
-  ipcMain.on(WalletEvent.verifyApiKey, (e, a) => verifyApiKey(a));
-  ipcMain.on(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
+  register(WalletEvent.setApiKey, async (e, a) => (apiKey = a));
+  register(WalletEvent.getApiKey, async () => apiKey);
+  register(WalletEvent.setWalletId, async (e, a) => (walletId = a));
+  register(WalletEvent.getWallets, () => getWallets());
+  register(WalletEvent.createBid, (e, a) => createBid(a));
+  register(WalletEvent.decodeTx, (e, a) => decodeTx(a));
+  register(WalletEvent.lockCoins, (e, a) => lockCoins(a));
+  register(WalletEvent.unlockCoins, (e, a) => unlockCoins(a));
+  register(WalletEvent.getCoins, () => getCoins());
+  register(WalletEvent.verifyApiKey, (e, a) => verifyApiKey(a));
+  register(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
 };

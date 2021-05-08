@@ -1,29 +1,29 @@
 import fetch from 'node-fetch';
 import { IpcMain, session } from 'electron';
 import * as Store from 'electron-store';
-import { SettingEvent, SettingEventResponse } from './settings.event';
+import { SettingEvent } from './settings.event';
+import { Utils } from '../utils';
 
 let window: any;
 let ipcMain: IpcMain;
 
-function ret(eventName: SettingEventResponse, data: any) {
-  window.webContents.send(eventName, data);
+function register(
+  eventName: SettingEvent,
+  func: (e: any, a: any) => Promise<any>
+) {
+  Utils.register(window, ipcMain, eventName, func);
 }
 
 module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   window = w;
   ipcMain = ipcm;
 
-  ipcMain.on(SettingEvent.getSetting, async (event: any, key: string) => {
-    const value = store.get(key);
-    ret(SettingEventResponse.getSetting, value);
-  });
-
-  ipcMain.on(
+  register(SettingEvent.getSetting, async (e, key: string) => store.get(key));
+  register(
     SettingEvent.setSetting,
-    (event: any, data: { key: string; value: any }) => {
+    async (e, data: { key: string; value: any }) => {
       store.set(data.key, data.value);
-      ret(SettingEventResponse.setSetting, data);
+      return data;
     }
   );
 };
