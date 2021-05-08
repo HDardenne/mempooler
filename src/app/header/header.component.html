@@ -33,32 +33,32 @@
 
   <div class="item">
     <div class="status-wrapper">
-      <div class="status-label">API key status :</div>
+      <div class="status-label">Wallet API key status :</div>
       <div
         class="status"
-        [ngClass]="{ success: !needApiKey, warning: needApiKey }"
+        [ngClass]="{ success: !needWalletApiKey, warning: needWalletApiKey }"
       >
-        {{ needApiKey ? 'Not set' : 'Set' }}
+        {{ needWalletApiKey ? 'Not set' : 'Set' }}
       </div>
     </div>
-    <p *ngIf="needApiKey" style="flex: 1 1 100%">
-      Mempooler needs to have access to your node to make the API calls in your
-      place. Paste the API key below
+    <p *ngIf="needWalletApiKey" style="flex: 1 1 100%">
+      Mempooler needs to have access to your wallet to make the API calls in
+      your place.
     </p>
-    <div class="reset-status" *ngIf="!needApiKey">
-      <button (click)="clearApiKey()">Clear API Key</button>
+    <div class="reset-status" *ngIf="!needWalletApiKey">
+      <button (click)="clearWalletApiKey()">Clear API Key</button>
     </div>
     <div
-      *ngIf="needApiKey"
+      *ngIf="needWalletApiKey"
       style="flex: 1 1 100%; align-self: flex-end; margin-top: 0.5em"
     >
       <input
         style="width: 100%; box-sizing: border-box"
         placeholder="API key"
-        [(ngModel)]="apiKey"
+        [(ngModel)]="walletApiKey"
       />
-      <button (click)="setApiKey()">Set API Key</button>
-      <p *ngIf="apiKeyError">{{ apiKeyError }}</p>
+      <button (click)="setWalletApiKey()">Set API Key</button>
+      <p *ngIf="walletApiKeyError">{{ walletApiKeyError }}</p>
     </div>
   </div>
 
@@ -86,6 +86,37 @@
         <option *ngFor="let w of wallets" [value]="w">{{ w }}</option>
       </select>
       <button style="" (click)="setWalletId()">Set Wallet ID</button>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="status-wrapper">
+      <div class="status-label">Node API key status :</div>
+      <div
+        class="status"
+        [ngClass]="{ success: !needNodeApiKey, warning: needNodeApiKey }"
+      >
+        {{ needNodeApiKey ? 'Not set' : 'Set' }}
+      </div>
+    </div>
+    <p *ngIf="needNodeApiKey" style="flex: 1 1 100%">
+      Mempooler needs to have access to your node to make the API calls in your
+      place.
+    </p>
+    <div class="reset-status" *ngIf="!needNodeApiKey">
+      <button (click)="clearNodeApiKey()">Clear API Key</button>
+    </div>
+    <div
+      *ngIf="needNodeApiKey"
+      style="flex: 1 1 100%; align-self: flex-end; margin-top: 0.5em"
+    >
+      <input
+        style="width: 100%; box-sizing: border-box"
+        placeholder="API key"
+        [(ngModel)]="nodeApiKey"
+      />
+      <button (click)="setNodeApiKey()">Set API Key</button>
+      <p *ngIf="nodeApiKeyError">{{ nodeApiKeyError }}</p>
     </div>
   </div>
 </div>

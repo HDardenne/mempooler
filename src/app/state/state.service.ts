@@ -21,7 +21,7 @@ export class StateService {
     this.mempoolerService.IsLoggedChange.subscribe(a => {
       this.updateReady();
     });
-    this.walletService.apiKeyChange.subscribe(a => {
+    this.walletService.walletApiKeyChange.subscribe(a => {
       this.updateReady();
     });
     this.walletService.walletIdChange.subscribe(a => {
@@ -32,7 +32,7 @@ export class StateService {
   private updateReady() {
     const newState =
       this.mempoolerService.IsLogged &&
-      !!this.walletService.apiKey &&
+      !!this.walletService.walletApiKey &&
       !!this.walletService.walletId;
     if (newState === this._ready.value) {
       return;

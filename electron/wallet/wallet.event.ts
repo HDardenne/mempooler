@@ -1,13 +1,16 @@
 export enum WalletEvent {
   createBid = 'createBid',
-  getApiKey = 'getApiKey',
-  setApiKey = 'setApiKey',
+  getWalletApiKey = 'getWalletApiKey',
+  getNodeApiKey = 'getNodeApiKey',
+  setWalletApiKey = 'setWalletApiKey',
+  setNodeApiKey = 'setNodeApiKey',
   setWalletId = 'setWalletId',
   getWallets = 'getWallets',
   decodeTx = 'decodeTx',
   lockCoins = 'lockCoins',
   unlockCoins = 'unlockCoins',
-  verifyApiKey = 'verifyApiKey',
+  verifyWalletApiKey = 'verifyWalletApiKey',
+  verifyNodeApiKey = 'verifyNodeApiKey',
   getNamesInfo = 'getNamesInfo',
   getCoins = 'getCoins'
 }

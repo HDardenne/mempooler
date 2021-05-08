@@ -11,14 +11,17 @@ import { WalletService } from '../wallet/wallet.service';
 })
 export class HeaderComponent implements OnInit {
   loginError = '';
-  apiKeyError = '';
+  walletApiKeyError = '';
+  nodeApiKeyError = '';
   authorizationUrl = '';
   needLogin = true;
-  needApiKey = true;
+  needWalletApiKey = true;
+  needNodeApiKey = true;
   needWalletId = true;
   loadingMempooler = false;
   wallets: string[] = [];
-  apiKey = '';
+  walletApiKey = '';
+  nodeApiKey = '';
   walletId = '';
 
   constructor(
@@ -32,10 +35,16 @@ export class HeaderComponent implements OnInit {
     if (this.mempoolerService.baseUrl) {
       this.isLogged();
     }
-    this.walletService.apiKeyChange.subscribe(a => {
-      this.apiKey = a;
-      this.apiKeyError = '';
-      this.needApiKey = !a;
+    this.walletService.walletApiKeyChange.subscribe(a => {
+      this.walletApiKey = a;
+      this.walletApiKeyError = '';
+      this.needWalletApiKey = !a;
+      this.ref.detectChanges();
+    });
+    this.walletService.nodeApiKeyChange.subscribe(a => {
+      this.nodeApiKey = a;
+      this.nodeApiKeyError = '';
+      this.needNodeApiKey = !a;
       this.ref.detectChanges();
     });
     this.walletService.walletIdChange.subscribe(a => {
@@ -49,16 +58,16 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  setApiKey() {
-    const newApiKey = this.apiKey;
+  setWalletApiKey() {
+    const newApiKey = this.walletApiKey;
     this.walletService
-      .verifyApiKey(newApiKey)
+      .verifyWalletApiKey(newApiKey)
       .pipe(
         switchMap(valid => {
           if (!valid) {
             throw new Error('Wrong API key');
           }
-          return this.walletService.setApiKey(this.apiKey);
+          return this.walletService.setWalletApiKey(this.walletApiKey);
         }),
         switchMap(() => {
           return this.walletService.getWallets();
@@ -66,23 +75,52 @@ export class HeaderComponent implements OnInit {
       )
       .subscribe(
         w => {
-          this.needApiKey = false;
+          this.needWalletApiKey = false;
           this.wallets = w;
           this.ref.detectChanges();
         },
         err => {
-          this.needApiKey = true;
-          this.apiKeyError = 'Wrong API key or hsd not up ?';
+          this.needWalletApiKey = true;
+          this.walletApiKeyError = 'Wrong API key or hsd not up ?';
           this.ref.detectChanges();
         }
       );
   }
 
-  clearApiKey() {
-    this.walletService.setApiKey('').subscribe(a => {
+  setNodeApiKey() {
+    const newApiKey = this.nodeApiKey;
+    this.walletService
+      .verifyNodeApiKey(newApiKey)
+      .pipe(
+        switchMap(valid => {
+          if (!valid) {
+            throw new Error('Wrong API key');
+          }
+          return this.walletService.setNodeApiKey(this.nodeApiKey);
+        })
+      )
+      .subscribe(
+        w => {
+          this.needNodeApiKey = false;
+          this.ref.detectChanges();
+        },
+        err => {
+          this.needNodeApiKey = true;
+          this.nodeApiKeyError = 'Wrong API key or hsd not up ?';
+          this.ref.detectChanges();
+        }
+      );
+  }
+
+  clearWalletApiKey() {
+    this.walletService.setWalletApiKey('').subscribe(a => {
       this.wallets = [];
       this.clearWalletId();
     });
+  }
+
+  clearNodeApiKey() {
+    this.walletService.setNodeApiKey('').subscribe(a => {});
   }
 
   setWalletId() {

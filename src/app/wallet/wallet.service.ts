@@ -12,12 +12,20 @@ const electron = (<any>window).require('electron');
   providedIn: 'root'
 })
 export class WalletService {
-  private _apiKeyChange = new BehaviorSubject('');
-  get apiKeyChange() {
-    return this._apiKeyChange as Observable<string>;
+  private _walletApiKeyChange = new BehaviorSubject('');
+  get walletApiKeyChange() {
+    return this._walletApiKeyChange as Observable<string>;
   }
-  get apiKey() {
-    return this._apiKeyChange.value;
+  get walletApiKey() {
+    return this._walletApiKeyChange.value;
+  }
+
+  private _nodeApiKeyChange = new BehaviorSubject('');
+  get nodeApiKeyChange() {
+    return this._nodeApiKeyChange as Observable<string>;
+  }
+  get nodeApiKey() {
+    return this._nodeApiKeyChange.value;
   }
 
   private _walletIdChange = new BehaviorSubject('');
@@ -30,9 +38,16 @@ export class WalletService {
 
   constructor() {
     electron.ipcRenderer.on(
-      WalletEvent.setApiKey + EventType.Response,
-      (event: any, newWalletId: string) => {
-        this._apiKeyChange.next(newWalletId);
+      WalletEvent.setWalletApiKey + EventType.Response,
+      (event: any, walletApiKey: string) => {
+        this._walletApiKeyChange.next(walletApiKey);
+      }
+    );
+
+    electron.ipcRenderer.on(
+      WalletEvent.setNodeApiKey + EventType.Response,
+      (event: any, nodeApiKey: string) => {
+        this._nodeApiKeyChange.next(nodeApiKey);
       }
     );
 
@@ -58,16 +73,29 @@ export class WalletService {
     return obs;
   }
 
-  setApiKey(apiKey: string) {
+  setWalletApiKey(apiKey: string) {
     electron.ipcRenderer.send(
-      WalletEvent.setApiKey + EventType.Request,
+      WalletEvent.setWalletApiKey + EventType.Request,
       apiKey
     );
-    return this._apiKeyChange.pipe(skip(1), take(1));
+    return this._walletApiKeyChange.pipe(skip(1), take(1));
   }
 
-  verifyApiKey(apiKey: string) {
-    const obs = this.request<boolean>(WalletEvent.verifyApiKey, apiKey);
+  setNodeApiKey(apiKey: string) {
+    electron.ipcRenderer.send(
+      WalletEvent.setNodeApiKey + EventType.Request,
+      apiKey
+    );
+    return this._nodeApiKeyChange.pipe(skip(1), take(1));
+  }
+
+  verifyWalletApiKey(apiKey: string) {
+    const obs = this.request<boolean>(WalletEvent.verifyWalletApiKey, apiKey);
+    return obs;
+  }
+
+  verifyNodeApiKey(apiKey: string) {
+    const obs = this.request<boolean>(WalletEvent.verifyNodeApiKey, apiKey);
     return obs;
   }
 

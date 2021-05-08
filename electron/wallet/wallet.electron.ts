@@ -6,8 +6,9 @@ import { Utils } from '../utils';
 
 let window: any;
 let ipcMain: IpcMain;
-let apiKey = '';
+let walletApiKey = '';
 let walletId = '';
+let nodeApiKey = '';
 
 function register(
   eventName: WalletEvent,
@@ -17,17 +18,20 @@ function register(
 }
 
 async function getWallets() {
-  if (!apiKey) {
+  if (!walletApiKey) {
     throw new Error('No api key');
   }
 
-  const bidRequest = await fetch(`http://x:${apiKey}@127.0.0.1:12039/wallet`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
+  const bidRequest = await fetch(
+    `http://x:${walletApiKey}@127.0.0.1:12039/wallet`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     }
-  });
+  );
 
   const json = await bidRequest.json();
   return json;
@@ -35,7 +39,7 @@ async function getWallets() {
 
 async function createBid(d: any) {
   const bidRequest = await fetch(
-    `http://x:${apiKey}@127.0.0.1:12039/wallet/${walletId}/bid`,
+    `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/bid`,
     {
       method: 'POST',
       headers: {
@@ -60,7 +64,7 @@ async function createBid(d: any) {
 async function decodeTx(hexes: string[]) {
   const result = [];
   for (const hex of hexes) {
-    const request = await fetch(`http://x:${apiKey}@127.0.0.1:12037`, {
+    const request = await fetch(`http://x:${nodeApiKey}@127.0.0.1:12037`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -81,7 +85,7 @@ async function decodeTx(hexes: string[]) {
 async function getNamesInfo(names: string[]) {
   const result = [];
   for (const hex of names) {
-    const request = await fetch(`http://x:${apiKey}@127.0.0.1:12037`, {
+    const request = await fetch(`http://x:${nodeApiKey}@127.0.0.1:12037`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -103,7 +107,7 @@ async function lockCoins(txs: { txid: any; index: any }[]) {
   const result = [];
   for (const t of txs) {
     const request = await fetch(
-      `http://x:${apiKey}@127.0.0.1:12039/wallet/${walletId}/locked/${t.txid}/${t.index}`,
+      `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/locked/${t.txid}/${t.index}`,
       {
         method: 'PUT',
         headers: {
@@ -123,7 +127,7 @@ async function unlockCoins(txs: { txid: any; index: any }[]) {
   const result = [];
   for (const t of txs) {
     const request = await fetch(
-      `http://x:${apiKey}@127.0.0.1:12039/wallet/${walletId}/locked/${t.txid}/${t.index}`,
+      `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/locked/${t.txid}/${t.index}`,
       {
         method: 'DELETE',
         headers: {
@@ -141,7 +145,7 @@ async function unlockCoins(txs: { txid: any; index: any }[]) {
 
 async function getCoins() {
   const request = await fetch(
-    `http://x:${apiKey}@127.0.0.1:12039/wallet/${walletId}/coin`,
+    `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/coin`,
     {
       method: 'GET',
       headers: {
@@ -155,7 +159,7 @@ async function getCoins() {
   return json;
 }
 
-async function verifyApiKey(apiKey: string) {
+async function verifyWalletApiKey(apiKey: string) {
   const valid = await fetch(`http://x:${apiKey}@127.0.0.1:12039/wallet`, {
     method: 'GET',
     headers: {
@@ -167,7 +171,24 @@ async function verifyApiKey(apiKey: string) {
       return a.ok;
     })
     .catch(a => false);
+  return valid;
+}
 
+async function verifyNodeApiKey(apiKey: string) {
+  const valid = await fetch(`http://x:${apiKey}@127.0.0.1:12037`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      method: 'getinfo'
+    })
+  })
+    .then(a => {
+      return a.ok;
+    })
+    .catch(a => false);
   return valid;
 }
 
@@ -175,8 +196,10 @@ module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   window = w;
   ipcMain = ipcm;
 
-  register(WalletEvent.setApiKey, async (e, a) => (apiKey = a));
-  register(WalletEvent.getApiKey, async () => apiKey);
+  register(WalletEvent.setWalletApiKey, async (e, a) => (walletApiKey = a));
+  register(WalletEvent.setNodeApiKey, async (e, a) => (nodeApiKey = a));
+  register(WalletEvent.getWalletApiKey, async () => walletApiKey);
+  register(WalletEvent.getNodeApiKey, async () => nodeApiKey);
   register(WalletEvent.setWalletId, async (e, a) => (walletId = a));
   register(WalletEvent.getWallets, () => getWallets());
   register(WalletEvent.createBid, (e, a) => createBid(a));
@@ -184,6 +207,7 @@ module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   register(WalletEvent.lockCoins, (e, a) => lockCoins(a));
   register(WalletEvent.unlockCoins, (e, a) => unlockCoins(a));
   register(WalletEvent.getCoins, () => getCoins());
-  register(WalletEvent.verifyApiKey, (e, a) => verifyApiKey(a));
+  register(WalletEvent.verifyWalletApiKey, (e, a) => verifyWalletApiKey(a));
+  register(WalletEvent.verifyNodeApiKey, (e, a) => verifyNodeApiKey(a));
   register(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
 };
