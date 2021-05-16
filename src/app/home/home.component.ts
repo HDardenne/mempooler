@@ -122,15 +122,22 @@ export class HomeComponent implements OnInit {
       index: number;
       localIndex: number;
     }[] = [];
+
+    let decodedTxs: any[];
     this.mempoolerService
       .getTransactionsHex(txIds)
       .pipe(
         switchMap(idToInfo =>
           this.walletService.decodeTx(Object.values(idToInfo))
         ),
-        switchMap(decodedTxs => {
+        switchMap(decodedTxsReceived => {
+          decodedTxs = decodedTxsReceived;
+          return this.walletService.getCoins();
+        }),
+        map(coins => {
           for (let i = 0; i < decodedTxs.length; i++) {
             const t = decodedTxs[i];
+            let hasError = false;
             for (const inp of t.result.vin) {
               const item = {
                 localIndex: i,
@@ -141,21 +148,28 @@ export class HomeComponent implements OnInit {
                 a => a.txid === item.txid && a.index == item.index
               );
               if (already) {
+                hasError = true;
                 problems.push(item);
                 if (problems.indexOf(already) === -1) {
                   problems.push(already);
                 }
+              } else if (
+                !coins.find(a => a.hash === item.txid && a.index === item.index)
+              ) {
+                hasError = true;
+                problems.push(item);
               } else {
                 hashAndIndex.push(item);
               }
             }
-          }
-          return this.walletService.getCoins();
-        }),
-        map(coins => {
-          for (const t of hashAndIndex) {
-            if (!coins.find(a => a.hash === t.txid && a.index === t.index)) {
-              problems.push(t);
+            if (!hasError) {
+              for (const inp of t.result.vout) {
+                const item = {
+                  index: inp.n,
+                  hash: t.result.txid
+                };
+                coins.push(item);
+              }
             }
           }
         })
