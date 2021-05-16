@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { EventType } from 'electron/eventType';
 import { SettingEvent } from 'electron/settings/settings.event';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -29,7 +29,10 @@ export class MempoolerService {
     return this._isLogged as Observable<boolean>;
   }
 
-  constructor(private readonly httpService: HttpClient) {
+  constructor(
+    private readonly httpService: HttpClient,
+    private readonly zone: NgZone
+  ) {
     electron.ipcRenderer.on(
       SettingEvent.setSetting + EventType.Response,
       (event: any, data: { key: string; value: any }) => {
@@ -51,7 +54,7 @@ export class MempoolerService {
   }
 
   request<T>(event: SettingEvent, reqArg: any): Observable<T> {
-    return Utils.request<T>(electron, event, reqArg);
+    return Utils.request<T>(electron, event, reqArg, this.zone);
   }
 
   getHasAccess() {

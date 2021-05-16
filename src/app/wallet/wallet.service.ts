@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { EventType } from 'electron/eventType';
 import { WalletEvent } from 'electron/wallet/wallet.event';
 
@@ -36,7 +36,7 @@ export class WalletService {
     return this._walletIdChange.value;
   }
 
-  constructor() {
+  constructor(private readonly zone: NgZone) {
     electron.ipcRenderer.on(
       WalletEvent.setWalletApiKey + EventType.Response,
       (event: any, walletApiKey: string) => {
@@ -60,7 +60,7 @@ export class WalletService {
   }
 
   request<T>(event: WalletEvent, reqArg: any): Observable<T> {
-    return Utils.request(electron, event, reqArg);
+    return Utils.request(electron, event, reqArg, this.zone);
   }
 
   createBid(

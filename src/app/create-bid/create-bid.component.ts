@@ -10,10 +10,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import {
   debounceTime,
-  distinct,
   distinctUntilChanged,
-  filter,
-  map,
   switchMap,
   takeUntil,
   tap
@@ -85,18 +82,16 @@ export class CreateBidComponent implements OnInit {
         })
       )
       .subscribe(a => {
-        this.lastHeight = a[0].result.info ? a[0].result.info.height + 755 : '';
-        this.ref.detectChanges();
+        this.lastHeight =
+          a[0].result && a[0].result.info ? a[0].result.info.height + 755 : '';
       });
 
     this.f.withReveal.valueChanges.subscribe(() => {
       this.f.revealDelay.updateValueAndValidity();
-      this.ref.detectChanges();
     });
 
     this.walletService.getCapabilities().subscribe(a => {
       this.canAutoReveal = a.prepareReveal;
-      this.ref.detectChanges();
     });
   }
 

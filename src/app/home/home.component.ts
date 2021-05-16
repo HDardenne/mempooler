@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MempoolerService } from '../mempooler/mempooler.service';
 import { TransactionInfo } from '../model/transaction-info';
 import { forkJoin } from 'rxjs';
@@ -25,25 +25,20 @@ export class HomeComponent implements OnInit {
     private mempoolerService: MempoolerService,
     private walletService: WalletService,
     private router: Router,
-    private zone: NgZone,
     private cd: ChangeDetectorRef,
     private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
     this.mempoolerService.IsLoggedChange.subscribe(a => {
-      this.zone.run(() => {
-        this.isLogged = a;
-        if (this.isLogged) {
-          this.loadTransactions();
-        }
-      });
+      this.isLogged = a;
+      if (this.isLogged) {
+        this.loadTransactions();
+      }
     });
 
     this.walletService.walletIdChange.subscribe(a => {
-      this.zone.run(() => {
-        this.hasWallet = !!a;
-      });
+      this.hasWallet = !!a;
     });
   }
 
