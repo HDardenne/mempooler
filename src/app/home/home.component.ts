@@ -19,6 +19,10 @@ export class HomeComponent implements OnInit {
   problemTxs: TransactionInfo[] = [];
   sentFilter = false;
   hasWallet = false;
+  hasNodeKey = false;
+  get hasFullAccess() {
+    return this.hasWallet && this.hasNodeKey;
+  }
   loading = false;
 
   constructor(
@@ -39,6 +43,10 @@ export class HomeComponent implements OnInit {
 
     this.walletService.walletIdChange.subscribe(a => {
       this.hasWallet = !!a;
+    });
+
+    this.walletService.nodeApiKeyChange.subscribe(a => {
+      this.hasNodeKey = !!a;
     });
   }
 
