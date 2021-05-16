@@ -85,11 +85,9 @@ export class HomeComponent implements OnInit {
           this.problemTxs = [];
           this.filterTxs();
           this.loading = false;
-          this.cd.detectChanges();
         },
         err => {
           this.loading = false;
-          this.cd.detectChanges();
         }
       );
   }
@@ -183,7 +181,6 @@ export class HomeComponent implements OnInit {
                   .join('\r\n ')
             });
           }
-          this.cd.detectChanges();
         },
         err => {
           this.loading = false;
@@ -241,7 +238,6 @@ export class HomeComponent implements OnInit {
             title: 'Lock coins OK',
             detail: 'Coins locked successfully'
           });
-          this.cd.detectChanges();
         },
         err => {
           this.loading = false;
@@ -250,7 +246,6 @@ export class HomeComponent implements OnInit {
             title: 'Lock coins KO',
             detail: 'Something went wrong'
           });
-          this.cd.detectChanges();
         }
       );
   }

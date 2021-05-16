@@ -40,21 +40,21 @@ export class WalletService {
     electron.ipcRenderer.on(
       WalletEvent.setWalletApiKey + EventType.Response,
       (event: any, walletApiKey: string) => {
-        this._walletApiKeyChange.next(walletApiKey);
+        this.zone.run(() => this._walletApiKeyChange.next(walletApiKey));
       }
     );
 
     electron.ipcRenderer.on(
       WalletEvent.setNodeApiKey + EventType.Response,
       (event: any, nodeApiKey: string) => {
-        this._nodeApiKeyChange.next(nodeApiKey);
+        this.zone.run(() => this._nodeApiKeyChange.next(nodeApiKey));
       }
     );
 
     electron.ipcRenderer.on(
       WalletEvent.setWalletId + EventType.Response,
       (event: any, newWalletId: string) => {
-        this._walletIdChange.next(newWalletId);
+        this.zone.run(() => this._walletIdChange.next(newWalletId));
       }
     );
   }

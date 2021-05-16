@@ -37,7 +37,7 @@ export class MempoolerService {
       SettingEvent.setSetting + EventType.Response,
       (event: any, data: { key: string; value: any }) => {
         if (data.key === 'mempoolerUrl') {
-          this._baseUrlChange.next(data.value);
+          this.zone.run(() => this._baseUrlChange.next(data.value));
         }
       }
     );
