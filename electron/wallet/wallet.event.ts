@@ -12,5 +12,6 @@ export enum WalletEvent {
   verifyWalletApiKey = 'verifyWalletApiKey',
   verifyNodeApiKey = 'verifyNodeApiKey',
   getNamesInfo = 'getNamesInfo',
-  getCoins = 'getCoins'
+  getCoins = 'getCoins',
+  getCapabilities = 'getCapabilities'
 }

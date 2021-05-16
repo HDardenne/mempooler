@@ -1,5 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import {
@@ -29,6 +35,7 @@ export class CreateBidComponent implements OnInit {
   }
 
   lastHeight = '';
+  canAutoReveal = false;
   constructor(
     private mempoolerService: MempoolerService,
     private walletService: WalletService,
@@ -44,7 +51,21 @@ export class CreateBidComponent implements OnInit {
       name: ['', [Validators.required]],
       height: [null, [Validators.required]],
       bid: [null, [Validators.required]],
-      blind: [null, []]
+      blind: [null, []],
+      withReveal: [false, []],
+      revealDelay: [
+        null,
+        [
+          this.dependOnValidator(
+            () => this.f.withReveal.value,
+            Validators.required
+          ),
+          this.dependOnValidator(
+            () => this.f.withReveal.value,
+            Validators.min(1)
+          )
+        ]
+      ]
     });
 
     this.f.name.valueChanges
@@ -67,6 +88,16 @@ export class CreateBidComponent implements OnInit {
         this.lastHeight = a[0].result.info ? a[0].result.info.height + 755 : '';
         this.ref.detectChanges();
       });
+
+    this.f.withReveal.valueChanges.subscribe(() => {
+      this.f.revealDelay.updateValueAndValidity();
+      this.ref.detectChanges();
+    });
+
+    this.walletService.getCapabilities().subscribe(a => {
+      this.canAutoReveal = a.prepareReveal;
+      this.ref.detectChanges();
+    });
   }
 
   goToHome() {
@@ -85,25 +116,38 @@ export class CreateBidComponent implements OnInit {
     }
 
     let coins: any[];
-    let hex: string;
+    let bidHex: string;
+    let revealHex: string;
     this.walletService
-      .createBid(val.passphrase, val.name, val.bid, val.blind)
+      .createBid(val.passphrase, val.name, val.bid, val.blind, val.withReveal)
       .pipe(
         tap(a => {
           if (a.error) {
             throw new Error(a.error.message);
           }
         }),
-        switchMap(a => {
-          coins = a.inputs.map((a: any) => ({
+        switchMap(txs => {
+          const { bid, reveal } = txs;
+          coins = bid.inputs.map((a: any) => ({
             index: a.prevout.index,
             txid: a.prevout.hash
           }));
-          hex = a.hex;
+          bidHex = bid.hex;
+          if (reveal) {
+            revealHex = reveal.hex;
+          }
           return this.walletService.lockCoins(coins);
         }),
-        switchMap(a => {
-          return this.mempoolerService.scheduleTx(hex, val.height);
+        switchMap(() => {
+          return val.withReveal
+            ? this.mempoolerService.scheduleTxs([
+                { hexData: bidHex, heightToSend: val.height },
+                {
+                  hexData: revealHex,
+                  heightToSend: this.lastHeight + val.revealDelay
+                }
+              ])
+            : this.mempoolerService.scheduleTx(bidHex, val.height);
         }),
         tap((a: any) => {
           if (a.err) {
@@ -139,5 +183,17 @@ export class CreateBidComponent implements OnInit {
           this.ref.detectChanges();
         }
       );
+  }
+
+  dependOnValidator(
+    condition: () => boolean,
+    validator: ValidatorFn
+  ): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const isRequired = this.form && condition();
+      // let isEmpty = control.value == null || control.value.length === 0;
+      const error = validator(control);
+      return isRequired ? validator(control) : null;
+    };
   }
 }

@@ -39,7 +39,9 @@ async function getWallets() {
 
 async function createBid(d: any) {
   const bidRequest = await fetch(
-    `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/bid`,
+    `http://x:${walletApiKey}@127.0.0.1:12039/wallet/${walletId}/${
+      d.withReveal ? 'auction' : 'bid'
+    }`,
     {
       method: 'POST',
       headers: {
@@ -50,6 +52,7 @@ async function createBid(d: any) {
         passphrase: d.passphrase,
         name: d.name,
         broadcast: false,
+        broadcastBid: false,
         sign: true,
         bid: d.bid * 1000000,
         lockup: (d.bid + d.blind) * 1000000
@@ -58,7 +61,7 @@ async function createBid(d: any) {
   );
 
   const json = await bidRequest.json();
-  return json;
+  return d.withReveal || json.error ? json : { bid: json };
 }
 
 async function decodeTx(hexes: string[]) {
@@ -192,6 +195,45 @@ async function verifyNodeApiKey(apiKey: string) {
   return valid;
 }
 
+async function getCapabilities() {
+  const hsdVersion = await fetch(`http://x:${nodeApiKey}@127.0.0.1:12037`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(a => {
+      return a.json();
+    })
+    .then(a => {
+      console.log(a);
+      return a;
+    })
+    .then(a => a.version);
+
+  return {
+    prepareReveal: checkVersion(hsdVersion, '2.4.0')
+  };
+}
+
+function checkVersion(current: string, target: string) {
+  const currentParts = current.split('.');
+  const targetParts = target.split('.');
+  let isSuperiorOrEqual = false;
+  const partsNumber = Math.max(currentParts.length, targetParts.length);
+  for (let i = 0; i < partsNumber; i++) {
+    const c = +currentParts[i] || 0;
+    const t = +targetParts[i] || 0;
+    console.log(i, partsNumber, c, t);
+    if (c > t || (i === partsNumber - 1 && c === t)) {
+      isSuperiorOrEqual = true;
+      break;
+    }
+  }
+  return isSuperiorOrEqual;
+}
+
 module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   window = w;
   ipcMain = ipcm;
@@ -210,4 +252,5 @@ module.exports = function (w: any, ipcm: IpcMain, store: Store) {
   register(WalletEvent.verifyWalletApiKey, (e, a) => verifyWalletApiKey(a));
   register(WalletEvent.verifyNodeApiKey, (e, a) => verifyNodeApiKey(a));
   register(WalletEvent.getNamesInfo, (e, a) => getNamesInfo(a));
+  register(WalletEvent.getCapabilities, (e, a) => getCapabilities());
 };

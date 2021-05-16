@@ -89,6 +89,41 @@
           </div>
         </div>
       </div>
+      <div class="form-group" *ngIf="canAutoReveal">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Auto reveal</label>
+            <input type="checkbox" formControlName="withReveal" />
+          </div>
+        </div>
+        <div class="form-field-wrapper" *ngIf="f.withReveal.value">
+          <div class="form-field">
+            <label>Reveal after</label>
+            <input
+              type="number"
+              formControlName="revealDelay"
+              placeholder="X blocks"
+            />
+            <div class="form-field-errors" *ngIf="f.withReveal.errors">
+              <div *ngIf="f.withReveal.errors.required">Cannot be empty</div>
+              <div *ngIf="f.withReveal.errors.min">Should be at least 1</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-field-wrapper" *ngIf="f.withReveal.value">
+          <div class="form-field">
+            <label>Reveal height</label>
+            <input
+              [value]="
+                lastHeight && f.revealDelay.value
+                  ? lastHeight + f.revealDelay.value
+                  : ''
+              "
+              disabled
+            />
+          </div>
+        </div>
+      </div>
       <div class="form-group">
         <div class="form-button-wrapper">
           <button [disabled]="form.invalid || loading">Create Bid</button>

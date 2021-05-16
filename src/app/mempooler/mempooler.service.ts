@@ -96,6 +96,12 @@ export class MempoolerService {
     });
   }
 
+  scheduleTxs(data: { heightToSend: number; hexData: string }[]) {
+    return this.httpService.post<any>(`${this.baseUrl}/add-to-mempool-bulk`, {
+      data: data
+    });
+  }
+
   getBaseUrl() {
     const obs = this.request<string>(SettingEvent.getSetting, 'mempoolerUrl');
     return obs;

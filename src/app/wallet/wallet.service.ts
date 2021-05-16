@@ -63,12 +63,19 @@ export class WalletService {
     return Utils.request(electron, event, reqArg);
   }
 
-  createBid(passphrase: string, name: string, bid: number, blind: number) {
+  createBid(
+    passphrase: string,
+    name: string,
+    bid: number,
+    blind: number,
+    withReveal: boolean
+  ) {
     const obs = this.request<any>(WalletEvent.createBid, {
       passphrase,
       name,
       bid,
-      blind
+      blind,
+      withReveal
     });
     return obs;
   }
@@ -134,6 +141,11 @@ export class WalletService {
 
   getCoins() {
     const obs = this.request<any[]>(WalletEvent.getCoins, undefined);
+    return obs;
+  }
+
+  getCapabilities() {
+    const obs = this.request<any>(WalletEvent.getCapabilities, undefined);
     return obs;
   }
 }
