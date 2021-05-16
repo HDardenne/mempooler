@@ -75,6 +75,11 @@ export class HomeComponent implements OnInit {
           hex = data[tx.id];
           return this.mempoolerService.deleteTransaction(tx.id);
         }),
+        tap((a: any) => {
+          if (a.err) {
+            throw new Error(a.err);
+          }
+        }),
         switchMap(res => {
           txs = res.txs;
           return this.walletService.decodeTx([hex]);
@@ -96,6 +101,11 @@ export class HomeComponent implements OnInit {
         },
         err => {
           this.loading = false;
+          this.modalService.openModal({
+            type: 'error',
+            title: `Delete TX ${tx.id} KO`,
+            detail: 'Something went wrong'
+          });
         }
       );
   }
