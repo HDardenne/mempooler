@@ -206,10 +206,6 @@ async function getCapabilities() {
     .then(a => {
       return a.json();
     })
-    .then(a => {
-      console.log(a);
-      return a;
-    })
     .then(a => a.version);
 
   return {
@@ -225,7 +221,6 @@ function checkVersion(current: string, target: string) {
   for (let i = 0; i < partsNumber; i++) {
     const c = +currentParts[i] || 0;
     const t = +targetParts[i] || 0;
-    console.log(i, partsNumber, c, t);
     if (c > t || (i === partsNumber - 1 && c === t)) {
       isSuperiorOrEqual = true;
       break;
