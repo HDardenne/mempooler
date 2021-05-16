@@ -59,7 +59,7 @@ export class CreateBidComponent implements OnInit {
           ),
           this.dependOnValidator(
             () => this.f.withReveal.value,
-            Validators.min(1)
+            Validators.min(0)
           )
         ]
       ]
@@ -139,7 +139,7 @@ export class CreateBidComponent implements OnInit {
                 { hexData: bidHex, heightToSend: val.height },
                 {
                   hexData: revealHex,
-                  heightToSend: this.lastHeight + val.revealDelay
+                  heightToSend: this.lastHeight + 1 + val.revealDelay
                 }
               ])
             : this.mempoolerService.scheduleTx(bidHex, val.height);

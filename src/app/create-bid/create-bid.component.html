@@ -106,7 +106,7 @@
             />
             <div class="form-field-errors" *ngIf="f.withReveal.errors">
               <div *ngIf="f.withReveal.errors.required">Cannot be empty</div>
-              <div *ngIf="f.withReveal.errors.min">Should be at least 1</div>
+              <div *ngIf="f.withReveal.errors.min">Should be at least 0</div>
             </div>
           </div>
         </div>
@@ -115,8 +115,8 @@
             <label>Reveal height</label>
             <input
               [value]="
-                lastHeight && f.revealDelay.value
-                  ? lastHeight + f.revealDelay.value
+                lastHeight && f.revealDelay.value >= 0
+                  ? lastHeight + 1 + f.revealDelay.value
                   : ''
               "
               disabled
