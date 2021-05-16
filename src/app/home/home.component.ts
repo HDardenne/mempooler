@@ -271,4 +271,35 @@ export class HomeComponent implements OnInit {
         }
       );
   }
+
+  showTx(tx: TransactionInfo) {
+    this.loading = true;
+    this.mempoolerService
+      .getTransactionDetails(tx.id)
+      .pipe(
+        tap((a: any) => {
+          if (a.err) {
+            throw new Error(a.err);
+          }
+        })
+      )
+      .subscribe(
+        a => {
+          this.loading = false;
+          this.modalService.openModal({
+            type: 'success',
+            title: `Show details ${tx.id} OK`,
+            detail: JSON.stringify(a.jsonData, null, '\t')
+          });
+        },
+        err => {
+          this.loading = false;
+          this.modalService.openModal({
+            type: 'error',
+            title: `Show details ${tx.id} KO`,
+            detail: 'Something went wrong'
+          });
+        }
+      );
+  }
 }

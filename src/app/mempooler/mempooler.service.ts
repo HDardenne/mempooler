@@ -105,6 +105,10 @@ export class MempoolerService {
     });
   }
 
+  getTransactionDetails(txId: string) {
+    return this.httpService.get<any>(`${this.baseUrl}/transactions/${txId}`);
+  }
+
   getBaseUrl() {
     const obs = this.request<string>(SettingEvent.getSetting, 'mempoolerUrl');
     return obs;

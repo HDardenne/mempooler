@@ -59,6 +59,7 @@
             <td class="sent">{{ t.isSent ? 'Yes' : 'No' }}</td>
             <td class="action">
               <button type="button" (click)="deleteTx(t)">Delete</button>
+              <button type="button" (click)="showTx(t)">Details</button>
             </td>
           </tr>
         </tbody>

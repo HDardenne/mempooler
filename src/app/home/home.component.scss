@@ -28,7 +28,7 @@ table {
     width: 2em;
   }
   .action {
-    width: 5em;
+    width: 9em;
   }
 
   td.height,
@@ -36,5 +36,9 @@ table {
   td.action,
   td.content {
     text-align: center;
+  }
+
+  td.action > * + * {
+    margin-left: 0.5em;
   }
 }
