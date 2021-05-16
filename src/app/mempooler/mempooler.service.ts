@@ -31,7 +31,7 @@ export class MempoolerService {
 
   constructor(private readonly httpService: HttpClient) {
     electron.ipcRenderer.on(
-      SettingEvent.setSetting,
+      SettingEvent.setSetting + EventType.Response,
       (event: any, data: { key: string; value: any }) => {
         if (data.key === 'mempoolerUrl') {
           this._baseUrlChange.next(data.value);
