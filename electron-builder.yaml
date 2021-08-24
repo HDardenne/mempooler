@@ -7,10 +7,13 @@ directories:
   buildResources: 'dist'
 win:
   target: ['nsis', 'portable']
+  icon: './icon-1024x1024.png'
 mac:
   target: ['dmg']
   category: 'public.app-category.utilities'
+  icon: './icon-1024x1024.png'
 dmg:
 linux:
   target: ['AppImage']
   category: 'Development'
+  icon: './icon-1024x1024.png'

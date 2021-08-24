@@ -15,7 +15,7 @@
     "start:dev": "electron-forge start",
     "dev:angular": "npm run build:angular -- --watch",
     "dev:electron": "npm run build:electron -- --watch",
-    "build-installer": "electron-builder"
+    "build-installer": "electron-builder --publish never"
   },
   "private": true,
   "dependencies": {
