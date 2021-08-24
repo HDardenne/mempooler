@@ -22,7 +22,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: dist-without-markdown
+          name: mempooler-binaries
           path: release/*.AppImage
   build-macos:
     runs-on: macos-latest
@@ -41,7 +41,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: dist-without-markdown
+          name: mempooler-binaries
           path: release/*.dmg
   build-windows:
     runs-on: windows-latest
@@ -60,5 +60,5 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: dist-without-markdown
+          name: mempooler-binaries
           path: release/*.exe
