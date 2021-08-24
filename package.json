@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "npm run build && electron-forge start",
     "build": " npm run build:angular && npm run build:electron",
-    "build:angular": "ng build --base-href ./",
+    "build:angular": "ng build",
     "build:electron": "tsc --p electron",
     "test": "ng test",
     "lint": "ng lint",
@@ -15,9 +15,7 @@
     "start:dev": "electron-forge start",
     "dev:angular": "npm run build:angular -- --watch",
     "dev:electron": "npm run build:electron -- --watch",
-    "package": "electron-forge package",
-    "make": "electron-forge make --platform=linux --arch=all",
-    "ahah": "electron-builder"
+    "build-installer": "electron-builder"
   },
   "private": true,
   "dependencies": {
