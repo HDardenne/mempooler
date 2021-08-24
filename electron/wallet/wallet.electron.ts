@@ -28,8 +28,8 @@ async function getWallets() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     }
   );
 
@@ -46,7 +46,7 @@ async function createBid(d: any) {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         passphrase: d.passphrase,
@@ -55,8 +55,8 @@ async function createBid(d: any) {
         broadcastBid: false,
         sign: true,
         bid: d.bid * 1000000,
-        lockup: (d.bid + d.blind) * 1000000
-      })
+        lockup: (d.bid + d.blind) * 1000000,
+      }),
     }
   );
 
@@ -71,12 +71,12 @@ async function decodeTx(hexes: string[]) {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         method: 'decoderawtransaction',
-        params: [hex]
-      })
+        params: [hex],
+      }),
     });
 
     const json = await request.json();
@@ -92,12 +92,12 @@ async function getNamesInfo(names: string[]) {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         method: 'getnameinfo',
-        params: [hex]
-      })
+        params: [hex],
+      }),
     });
 
     const json = await request.json();
@@ -115,8 +115,8 @@ async function lockCoins(txs: { txid: any; index: any }[]) {
         method: 'PUT',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -135,8 +135,8 @@ async function unlockCoins(txs: { txid: any; index: any }[]) {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
 
@@ -153,8 +153,8 @@ async function getCoins() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     }
   );
 
@@ -167,8 +167,8 @@ async function verifyWalletApiKey(apiKey: string) {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   })
     .then(a => {
       return a.ok;
@@ -182,11 +182,11 @@ async function verifyNodeApiKey(apiKey: string) {
     method: 'POST',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      method: 'getinfo'
-    })
+      method: 'getinfo',
+    }),
   })
     .then(a => {
       return a.ok;
@@ -200,8 +200,8 @@ async function getCapabilities() {
     method: 'GET',
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   })
     .then(a => {
       return a.json();
@@ -209,7 +209,7 @@ async function getCapabilities() {
     .then(a => a.version);
 
   return {
-    prepareReveal: checkVersion(hsdVersion, '2.4.0')
+    prepareReveal: checkVersion(hsdVersion, '2.4.0'),
   };
 }
 

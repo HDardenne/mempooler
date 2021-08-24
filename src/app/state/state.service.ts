@@ -6,7 +6,7 @@ import { WalletService } from '../wallet/wallet.service';
 const electron = (<any>window).require('electron');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StateService {
   private _ready = new BehaviorSubject(false);

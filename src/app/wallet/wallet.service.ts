@@ -9,7 +9,7 @@ import { Utils } from '../utils';
 const electron = (<any>window).require('electron');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WalletService {
   private _walletApiKeyChange = new BehaviorSubject('');
@@ -75,7 +75,7 @@ export class WalletService {
       name,
       bid,
       blind,
-      withReveal
+      withReveal,
     });
     return obs;
   }

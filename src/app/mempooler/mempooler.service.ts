@@ -10,7 +10,7 @@ import { Utils } from '../utils';
 const electron = (<any>window).require('electron');
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MempoolerService {
   _baseUrlChange = new BehaviorSubject<string>('');
@@ -95,13 +95,13 @@ export class MempoolerService {
   scheduleTx(hex: string, height: number) {
     return this.httpService.post<any>(`${this.baseUrl}/add-to-mempool`, {
       heightToSend: height,
-      hexData: hex
+      hexData: hex,
     });
   }
 
   scheduleTxs(data: { heightToSend: number; hexData: string }[]) {
     return this.httpService.post<any>(`${this.baseUrl}/add-to-mempool-bulk`, {
-      data: data
+      data: data,
     });
   }
 
@@ -117,7 +117,7 @@ export class MempoolerService {
   setBaseUrl(url: string) {
     electron.ipcRenderer.send(SettingEvent.setSetting + EventType.Request, {
       key: 'mempoolerUrl',
-      value: url
+      value: url,
     });
     return this._baseUrlChange.pipe(skip(1), take(1));
   }

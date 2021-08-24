@@ -8,9 +8,8 @@ describe('CreateTxComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreateTxComponent ]
-    })
-    .compileComponents();
+      declarations: [CreateTxComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

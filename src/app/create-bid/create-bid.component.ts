@@ -4,7 +4,7 @@ import {
   FormBuilder,
   FormGroup,
   ValidatorFn,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -13,7 +13,7 @@ import {
   distinctUntilChanged,
   switchMap,
   takeUntil,
-  tap
+  tap,
 } from 'rxjs/operators';
 import { MempoolerService } from '../mempooler/mempooler.service';
 import { ModalService } from '../modal/modal.service';
@@ -22,7 +22,7 @@ import { WalletService } from '../wallet/wallet.service';
 @Component({
   selector: 'app-create-bid',
   templateUrl: './create-bid.component.html',
-  styleUrls: ['./create-bid.component.scss']
+  styleUrls: ['./create-bid.component.scss'],
 })
 export class CreateBidComponent implements OnInit {
   loading = false;
@@ -60,9 +60,9 @@ export class CreateBidComponent implements OnInit {
           this.dependOnValidator(
             () => this.f.withReveal.value,
             Validators.min(0)
-          )
-        ]
-      ]
+          ),
+        ],
+      ],
     });
 
     this.f.name.valueChanges
@@ -125,7 +125,7 @@ export class CreateBidComponent implements OnInit {
           const { bid, reveal } = txs;
           coins = bid.inputs.map((a: any) => ({
             index: a.prevout.index,
-            txid: a.prevout.hash
+            txid: a.prevout.hash,
           }));
           bidHex = bid.hex;
           if (reveal) {
@@ -139,8 +139,8 @@ export class CreateBidComponent implements OnInit {
                 { hexData: bidHex, heightToSend: val.height },
                 {
                   hexData: revealHex,
-                  heightToSend: this.lastHeight + 1 + val.revealDelay
-                }
+                  heightToSend: this.lastHeight + 1 + val.revealDelay,
+                },
               ])
             : this.mempoolerService.scheduleTx(bidHex, val.height);
         }),
@@ -157,7 +157,7 @@ export class CreateBidComponent implements OnInit {
             title: 'Schedule BID OK',
             detail:
               'All good ! The transaction will be broadcasted at height ' +
-              val.height
+              val.height,
           });
           this.form.controls.bid.reset(null);
           this.form.controls.blind.reset(null);
@@ -172,7 +172,7 @@ export class CreateBidComponent implements OnInit {
           this.modalService.openModal({
             type: 'error',
             title: 'Schedule BID KO',
-            detail: err.message
+            detail: err.message,
           });
           this.loading = false;
           this.ref.detectChanges();

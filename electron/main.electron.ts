@@ -10,15 +10,15 @@ function createWindow() {
     width: 1080,
     height: 620,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
 
   mainWindow.loadURL(
     url.format({
       pathname: path.join(__dirname, `../angular/index.html`),
       protocol: 'file:',
-      slashes: true
+      slashes: true,
     })
   );
 

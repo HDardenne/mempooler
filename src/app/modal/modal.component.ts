@@ -3,7 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   HostBinding,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ModalData, ModalService } from './modal.service';
 
@@ -11,7 +11,7 @@ import { ModalData, ModalService } from './modal.service';
   selector: 'app-modal',
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalComponent implements OnInit {
   modalData: ModalData | null = null;

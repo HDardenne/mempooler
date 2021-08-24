@@ -26,23 +26,23 @@ export function toto(mempoolerService: MempoolerService) {
     CreateBidComponent,
     CreateTxComponent,
     ModalComponent,
-    LoaderComponent
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     {
       provide: APP_INITIALIZER,
       useFactory: toto,
       deps: [MempoolerService],
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -10,7 +10,7 @@ import { ModalService } from '../modal/modal.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
   isLogged = false;
@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
         switchMap(detail => {
           const coins = detail[0].result.vin.map((a: any) => ({
             index: a.vout,
-            txid: a.txid
+            txid: a.txid,
           }));
           return this.walletService.unlockCoins(coins);
         })
@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'error',
             title: `Delete TX ${tx.id} KO`,
-            detail: 'Something went wrong'
+            detail: 'Something went wrong',
           });
         }
       );
@@ -119,7 +119,7 @@ export class HomeComponent implements OnInit {
       this.modalService.openModal({
         type: 'error',
         title: 'Verify coins KO',
-        detail: 'No transaction to verify'
+        detail: 'No transaction to verify',
       });
       return;
     }
@@ -155,7 +155,7 @@ export class HomeComponent implements OnInit {
               const item = {
                 localIndex: i,
                 index: inp.vout,
-                txid: inp.txid
+                txid: inp.txid,
               };
               const already = hashAndIndex.find(
                 a => a.txid === item.txid && a.index == item.index
@@ -179,7 +179,7 @@ export class HomeComponent implements OnInit {
               for (const inp of t.result.vout) {
                 const item = {
                   index: inp.n,
-                  hash: t.result.txid
+                  hash: t.result.txid,
                 };
                 coins.push(item);
               }
@@ -198,7 +198,7 @@ export class HomeComponent implements OnInit {
             this.modalService.openModal({
               type: 'success',
               title: 'Verify coins OK',
-              detail: 'No problem found'
+              detail: 'No problem found',
             });
           } else {
             this.modalService.openModal({
@@ -213,7 +213,7 @@ export class HomeComponent implements OnInit {
                         .map(a => a.action + ' ' + a.name)
                         .join(',')}`
                   )
-                  .join('\r\n ')
+                  .join('\r\n '),
             });
           }
         },
@@ -222,7 +222,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'error',
             title: 'Verify coins KO',
-            detail: 'something went wrong'
+            detail: 'something went wrong',
           });
         }
       );
@@ -245,7 +245,7 @@ export class HomeComponent implements OnInit {
       this.modalService.openModal({
         type: 'error',
         title: 'Lock coins KO',
-        detail: 'No coin to lock'
+        detail: 'No coin to lock',
       });
       return;
     }
@@ -275,7 +275,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'success',
             title: 'Lock coins OK',
-            detail: 'Coins locked successfully'
+            detail: 'Coins locked successfully',
           });
         },
         err => {
@@ -283,7 +283,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'error',
             title: 'Lock coins KO',
-            detail: 'Something went wrong'
+            detail: 'Something went wrong',
           });
         }
       );
@@ -306,7 +306,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'success',
             title: `Show details ${tx.id} OK`,
-            detail: JSON.stringify(a.jsonData, null, '\t')
+            detail: JSON.stringify(a.jsonData, null, '\t'),
           });
         },
         err => {
@@ -314,7 +314,7 @@ export class HomeComponent implements OnInit {
           this.modalService.openModal({
             type: 'error',
             title: `Show details ${tx.id} KO`,
-            detail: 'Something went wrong'
+            detail: 'Something went wrong',
           });
         }
       );

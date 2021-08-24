@@ -1,4 +1,4 @@
 export enum EventType {
   Request = 'Request',
-  Response = 'Response'
+  Response = 'Response',
 }

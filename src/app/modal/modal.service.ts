@@ -8,7 +8,7 @@ export interface ModalData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModalService {
   modalChanged = new Subject<ModalData | null>();
