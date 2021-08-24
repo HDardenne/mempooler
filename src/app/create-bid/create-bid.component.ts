@@ -154,7 +154,7 @@ export class CreateBidComponent implements OnInit {
         res => {
           this.modalService.openModal({
             type: 'success',
-            title: 'Create BID OK',
+            title: 'Schedule BID OK',
             detail:
               'All good ! The transaction will be broadcasted at height ' +
               val.height
@@ -171,7 +171,7 @@ export class CreateBidComponent implements OnInit {
           }
           this.modalService.openModal({
             type: 'error',
-            title: 'Create BID KO',
+            title: 'Schedule BID KO',
             detail: err.message
           });
           this.loading = false;

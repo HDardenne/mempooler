@@ -111,7 +111,10 @@ export class HomeComponent implements OnInit {
   }
 
   verifyLocks() {
-    const txIds = this.txs.filter(a => !a.isSent).map(a => a.id);
+    const txIds = this.txs
+      .filter(a => !a.isSent)
+      .sort((a, b) => a.heightToSend - b.heightToSend)
+      .map(a => a.id);
     if (txIds.length === 0) {
       this.modalService.openModal({
         type: 'error',
@@ -138,7 +141,7 @@ export class HomeComponent implements OnInit {
       .getTransactionsHex(txIds)
       .pipe(
         switchMap(idToInfo =>
-          this.walletService.decodeTx(Object.values(idToInfo))
+          this.walletService.decodeTx(txIds.map(a => idToInfo[a]))
         ),
         switchMap(decodedTxsReceived => {
           decodedTxs = decodedTxsReceived;
@@ -229,6 +232,10 @@ export class HomeComponent implements OnInit {
 
   createBid() {
     this.router.navigate(['/create-bid']);
+  }
+
+  createTx() {
+    this.router.navigate(['/create-tx']);
   }
 
   lockCoins() {

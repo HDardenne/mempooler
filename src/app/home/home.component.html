@@ -11,12 +11,13 @@
   </div>
 
   <div>
-    <h1>Create a bid</h1>
+    <h1>Schedule a new transaction</h1>
     <div *ngIf="!hasFullAccess">
-      You need to select a wallet to create a new bid
+      You need to select a wallet to schedule a new transaction
     </div>
-    <div *ngIf="hasFullAccess">
-      <button type="button" (click)="createBid()">Go to bid creation</button>
+    <div *ngIf="hasFullAccess" class="action">
+      <button type="button" (click)="createTx()">Schedule a transaction</button>
+      <button type="button" (click)="createBid()">Schedule a BID</button>
     </div>
   </div>
 
@@ -25,7 +26,7 @@
     <div *ngIf="!hasFullAccess">
       You need to select a wallet before accessing the coins
     </div>
-    <div *ngIf="hasFullAccess">
+    <div *ngIf="hasFullAccess" class="action">
       <button type="button" (click)="lockCoins()">Lock coins</button>
       <button type="button" (click)="verifyLocks()">Verify coins</button>
     </div>

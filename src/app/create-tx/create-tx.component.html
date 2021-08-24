@@ -1,0 +1,44 @@
+<app-loader *ngIf="loading"></app-loader>
+<div>
+  <div>
+    <button (click)="goToHome()">Back to home</button>
+  </div>
+  <h1>Schedule a transaction</h1>
+  <div>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Height</label>
+            <input
+              type="number"
+              formControlName="height"
+              placeholder="height"
+            />
+            <div class="form-field-errors" *ngIf="f.height.errors">
+              <div *ngIf="f.height.errors.required">Cannot be empty</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-field-wrapper">
+          <div class="form-field">
+            <label>Transaction hex</label>
+            <textarea formControlName="hex" placeholder="hex"></textarea>
+            <div class="form-field-errors" *ngIf="f.hex.errors">
+              <div *ngIf="f.hex.errors.required">Cannot be empty</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-button-wrapper">
+          <button [disabled]="form.invalid || loading">
+            Schedule Transaction
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

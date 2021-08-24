@@ -1,0 +1,40 @@
+.form-field {
+  display: flex;
+  flex-flow: column wrap;
+  flex: 0 0 auto;
+  align-items: center;
+
+  input {
+    width: 8em;
+    &[type='checkbox'] {
+      width: 9em;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  .errors {
+    display: none;
+  }
+}
+
+.form-button-wrapper,
+.form-field-wrapper {
+  padding: 0.5em 1em;
+}
+
+.form-field-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  flex: 0 0 auto;
+}
+
+.form-group {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
+
+.form-field-errors {
+  display: none;
+}

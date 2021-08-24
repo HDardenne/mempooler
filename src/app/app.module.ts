@@ -12,6 +12,7 @@ import { CreateBidComponent } from './create-bid/create-bid.component';
 import { MempoolerService } from './mempooler/mempooler.service';
 import { ModalComponent } from './modal/modal.component';
 import { LoaderComponent } from './loader/loader.component';
+import { CreateTxComponent } from './create-tx/create-tx.component';
 
 export function toto(mempoolerService: MempoolerService) {
   return () => mempoolerService.init();
@@ -23,6 +24,7 @@ export function toto(mempoolerService: MempoolerService) {
     HomeComponent,
     HeaderComponent,
     CreateBidComponent,
+    CreateTxComponent,
     ModalComponent,
     LoaderComponent
   ],

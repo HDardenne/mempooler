@@ -2,6 +2,11 @@
   margin: 1em -0.5em -0.5em -0.5em;
   border-top: 0.25em solid #a9a9a9;
 }
+
+.action > * + * {
+  margin-left: 0.5em;
+}
+
 table {
   border-spacing: 0;
   width: 100%;
@@ -36,9 +41,5 @@ table {
   td.action,
   td.content {
     text-align: center;
-  }
-
-  td.action > * + * {
-    margin-left: 0.5em;
   }
 }

@@ -3,7 +3,7 @@
   <div>
     <button (click)="goToHome()">Back to home</button>
   </div>
-  <h1>Add a BID</h1>
+  <h1>Schedule a BID</h1>
   <div>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -126,7 +126,7 @@
       </div>
       <div class="form-group">
         <div class="form-button-wrapper">
-          <button [disabled]="form.invalid || loading">Create Bid</button>
+          <button [disabled]="form.invalid || loading">Schedule Bid</button>
         </div>
       </div>
     </form>
